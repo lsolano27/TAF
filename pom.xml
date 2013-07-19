@@ -73,7 +73,12 @@
 			<groupId>com.opera</groupId>
 			<artifactId>operadriver</artifactId>
 		</dependency>
-	</dependencies>
+		<dependency>
+	      <groupId>jexcelapi</groupId>
+	      <artifactId>jxl</artifactId>
+	      <version>2.6</version>
+    	</dependency> 
+	</dependencies>	 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
