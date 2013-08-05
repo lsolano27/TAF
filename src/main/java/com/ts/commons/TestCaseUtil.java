@@ -36,6 +36,12 @@ public abstract class TestCaseUtil  implements Component{
 	public TestCaseUtil using(Until until)
 	{
 		this.amountOfusingWithOutCecks ++;
+		wait(until);
+		return this;
+	}
+	
+	protected static void wait(Until until)
+	{
 		boolean expectedCondition = true;
 		long startTime = System.currentTimeMillis();
 		
@@ -52,7 +58,6 @@ public abstract class TestCaseUtil  implements Component{
 				
 			
 		}
-		return this;
 	}
 
 	public TestCaseUtil using(Component component)

@@ -16,6 +16,21 @@ public class FirefoxDriver extends org.openqa.selenium.firefox.FirefoxDriver  {
 	{
 		super();
 		manage().timeouts().implicitlyWait(IMPLICT_TIME, IMPLICT_TIME_UNIT );
+		
+		Validator ffValidations= new Validator() {
+			
+			@Override
+			public void Validate() {
+	
+				int currentVersion = Integer.parseInt(getBrowserVersion().split("\\.")[0]);
+				if(currentVersion < 16)
+				{
+					new RuntimeException("Increase firefox to version 16 or upper, to avoid errors");
+				}
+			}
+		};
+		ffValidations.Validate();
+		
 	}
 	
 	 public void get(String domine, String user, String pass)
@@ -48,37 +63,59 @@ public class FirefoxDriver extends org.openqa.selenium.firefox.FirefoxDriver  {
 		 builder.dragAndDrop(source, target).build().perform();
 	 }
 
-	 public void waitToElementBeVisible(final WebElement element)
+	 public void waitToElementBeVisible(final WebElement... element)
 	 {
-		 new Until() {
+		TestCaseUtil.wait(new Until() {
 			
 			@Override
 			public boolean execute() {
-				return element.isDisplayed();
+				for(WebElement ele: element )
+				{
+					boolean elementIsNotVisible = ! ele.isDisplayed();
+					if( elementIsNotVisible )
+					{
+						return false;
+					}
+				}
+				return true;
 			}
-		};
+		});
 	 }
 	 
-	 public void waitToElementBeEnabled(final WebElement element)
+	 public void waitToElementBeEnabled(final WebElement... element)
 	 {
-		 new Until() {
-			
+		 TestCaseUtil.wait(new Until() {
 			@Override
 			public boolean execute() {
-				return element.isEnabled();
+				for(WebElement ele: element )
+				{
+					boolean elementIsNotVisible = ! ele.isEnabled();
+					if( elementIsNotVisible )
+					{
+						return false;
+					}
+				}
+				return true;
 			}
-		};
+		});
 	 }
 	 
-	 public void waitToElementBeSelected(final WebElement element)
+	 public void waitToElementBeSelected(final WebElement... element)
 	 {
-		 new Until() {
-			
+		 TestCaseUtil.wait(new Until() {
 			@Override
 			public boolean execute() {
-				return element.isSelected();
+				for(WebElement ele: element )
+				{
+					boolean elementIsNotVisible = ! ele.isSelected();
+					if( elementIsNotVisible )
+					{
+						return false;
+					}
+				}
+				return true;
 			}
-		};
+		});
 	 }
 	 
 	 public String getBrowserVersion()

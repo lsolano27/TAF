@@ -1,7 +1,6 @@
 package com.ts.commons;
 
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 
 public interface TsDriver {
 	

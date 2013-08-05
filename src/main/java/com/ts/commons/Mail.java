@@ -16,6 +16,7 @@ import javax.mail.Store;
 import javax.mail.search.ComparisonTerm;
 import javax.mail.search.ReceivedDateTerm;
 import javax.mail.search.SearchTerm;
+
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.util.MailSSLSocketFactory;
 
@@ -64,6 +65,7 @@ public abstract class Mail implements Component {
 		
 
 		public abstract Mail then();
+		public abstract Mail and();
 		
 		public Mail Loggin() throws MessagingException  
 		{
