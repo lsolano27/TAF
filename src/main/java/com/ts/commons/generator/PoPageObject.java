@@ -47,6 +47,14 @@ public class PoPageObject {
 		return this;
 	}
 	
+	protected PoPageObject getInputTypePassElements(){
+		if(poJavaScriptExecutor.getNumOfElements("function get(){return document.getElementsByTagName(\"input\");};return get();", "password") > 0){
+			List<WebElement> inputTypePass = driver.findElements(By.cssSelector("input[type=password]"));
+			generateElementsDeclarations(inputTypePass);
+		}		
+		return this;
+	}
+	
 	protected PoPageObject getInputTypeRadioElements(){
 		if(poJavaScriptExecutor.getNumOfElements("function get(){return document.getElementsByTagName(\"input\");};return get();", "radio") > 0){
 			List<WebElement> inputTypeRadio = driver.findElements(By.cssSelector("input[type=radio]"));
@@ -112,17 +120,18 @@ public class PoPageObject {
 	}
 	
 	private void generateElementsDeclarations(List<WebElement> webElements){
-			for (WebElement element : webElements) {
-				PoWebElement newWebElement = new PoWebElement(driver);
-				newWebElement.attributeBy = newWebElement.getBy(element);
-				newWebElement.attributeValue = newWebElement.getValue(element, newWebElement.attributeBy);
-				lista.add(newWebElement);							
-			}
+		for (WebElement element : webElements) {
+			PoWebElement newWebElement = new PoWebElement(driver);
+			newWebElement.attributeBy = newWebElement.getBy(element);
+			newWebElement.attributeValue = newWebElement.getValue(element, newWebElement.attributeBy);
+			newWebElement.attributeTag = newWebElement.getTagName(element);
+			lista.add(newWebElement);							
+		}
 	}
 	
 	protected PoPageObject storageWebElementDeclarations(int frame){
 		if(lista.size() > 0){
-			plantilla.storageWebElements(lista, frame);	
+			plantilla.storageWebElements(driver, lista, frame);	
 		}		
 		lista.clear();
 		return this;

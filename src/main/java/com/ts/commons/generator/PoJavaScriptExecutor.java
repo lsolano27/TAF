@@ -8,6 +8,8 @@ import org.openqa.selenium.WebElement;
 
 
 public class PoJavaScriptExecutor {
+	@SuppressWarnings("unused")
+	private JavascriptExecutor js;
 	private WebDriver driver;
 	
 	public PoJavaScriptExecutor (WebDriver driver)
@@ -18,7 +20,8 @@ public class PoJavaScriptExecutor {
 	@SuppressWarnings("unchecked")
 	public Integer getNumOfElements(String javaScript, String type){
 		int count = 0;
-		boolean isInput = false;		
+		boolean isInput = false;
+		js = (JavascriptExecutor)driver;		
 		List<WebElement> elements =  (List<WebElement>) ((JavascriptExecutor)driver).executeScript(javaScript);
 		
 		if(elements.size() > 0){

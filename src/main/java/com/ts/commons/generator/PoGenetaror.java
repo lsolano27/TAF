@@ -48,6 +48,7 @@ import org.openqa.selenium.WebElement;
 		getElements(
 				aPage
 					.getInputTypeTextElements()
+					.getInputTypePassElements()
 					.getInputTypeRadioElements()
 					.getInputTypeButtomElements()
 					.getButtonsElements()

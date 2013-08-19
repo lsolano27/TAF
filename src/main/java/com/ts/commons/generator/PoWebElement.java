@@ -7,6 +7,7 @@ import org.openqa.selenium.WebElement;
 public class PoWebElement{
 	protected String attributeBy;
 	protected String attributeValue;
+	protected String attributeTag;
 	private static final String[] criterias = {"id","name"};
 	private PoJavaScriptExecutor poJavaScriptExecutor;
 	
@@ -38,5 +39,9 @@ public class PoWebElement{
 		}else {
 			return "";
 		}	
+	}
+	
+	public String getTagName(WebElement element){
+		return element.getTagName();			
 	}
 }

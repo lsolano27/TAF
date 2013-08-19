@@ -5,9 +5,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import com.ts.commons.Component;
 
@@ -23,12 +28,12 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 	private boolean firstWrite= false;	
 	private BufferedWriter bw;
 	private PrintWriter wr;
+	private final String defaultGeneratedVarName = "'Sorry, please define this variable name';";
 	
 	public PoWebElement[] getPredifinedWebElements()
 	{
 		return null;
 	}
-	
 	
 	public Page(WebDriver driver)
 	{
@@ -40,7 +45,7 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 		}
 	}
 	
-	private Page generatePO (WebDriver driver){
+	private Page generatePO (WebDriver driver) {
 		String className = this.getClass().getName();
 		className = className.replaceAll("\\.", "/");
 		className = className+".java";
@@ -49,17 +54,15 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 		int reference = diskLocation.lastIndexOf("/target");
 		diskLocation = diskLocation.substring(0, reference);
 		
-		diskLocation = diskLocation+"/src/test/java/"+className;
+		diskLocation = diskLocation+"\\src\\test\\java\\"+className;
 		
 		boolean classIsNeverGenerated = preDefinedWebElements == null;
 		if(classIsNeverGenerated)
 		{
 			new PoGenetaror(driver)
 			.setNewPageName(diskLocation)
-			.generatePageObject(this);	
-			
-		}		
-	
+			.generatePageObject(this);				
+		}			
 		return this;			
 	}
 	
@@ -69,7 +72,7 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 		return
 		includeImports()
 					.then()
-					.includeClassDeclaration(pageName)
+					.includeClassDeclaration()
 					.then()
 					.generateContructor()
 					.then()
@@ -89,8 +92,7 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 		return this;
 	}
 	
-	protected Page storageWebElements(ArrayList<PoWebElement> list, int numOfFrames){
-		int index = 0;
+	protected Page storageWebElements(WebDriver driver, ArrayList<PoWebElement> list, int numOfFrames){		
 		arrayInLines.addAll(list);
 				
 		if(numOfFrames > 0){
@@ -99,25 +101,98 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 			webElementsDeclarations.add("	//*	FRAME OR IFRAME *");
 			webElementsDeclarations.add("	//*******************");
 			webElementsDeclarations.add("");
-		}	
+		}
 		
-		for (PoWebElement webElement: list) {				
-				webElementsDeclarations.add("	@FindBy(" + webElement.attributeBy + " = \"" + webElement.attributeValue + "\")");
-				
-				if( ! webElement.attributeBy.equals("xpath")){
-					webElementsDeclarations.add("	WebElement " + webElement.attributeValue.replace(".", "").replace("-", "_") + ";");
+		for (PoWebElement webElement: list) {
+			boolean hasXpath = false;
+			WebElement element = null;
+			webElementsDeclarations.add("	@FindBy(" + webElement.attributeBy + " = \"" + webElement.attributeValue + "\")");
+			
+			if(webElement.attributeBy.equals("xpath")){
+				hasXpath = true;
+				element = driver.findElement(By.xpath(webElement.attributeValue));
+			}		
+			
+			if( ! hasXpath){
+				webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + webElement.attributeValue));
+			}else if(hasXpath){				
+				if( ! element.getText().trim().equals("")){
+					webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getText()));
+				}else if(! element.getAttribute("value").trim().equals("")){
+					webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getAttribute("value")));
 				}else{
-					index ++;
-					webElementsDeclarations.add("	WebElement " + "VariableNameToDefine" + index + ";");
-				}				
-				webElementsDeclarations.add("");
+					webElementsDeclarations.add("	WebElement " + defaultGeneratedVarName);
+				}
+			}				
+			webElementsDeclarations.add("");
 		}		
 		return this;
 	}
 	
+	private String generateVarName(String gottenValue){
+		String generatedName = removeAcentAndLongNumber(gottenValue);
+		generatedName = removeSpecialCharacters(generatedName);
+		return generatedName + ";";		
+	}	
+	
+	private String removeAcentAndLongNumber(String input){
+		Pattern pattern;
+		String normalized = Normalizer.normalize(input, Form.NFD);
+		String expression = "\\P{ASCII}";
+		
+		if(removeLongNumber(input)){
+			expression = expression.replace("}", "|\\d");
+		}		
+		
+		pattern = Pattern.compile(expression);
+		return pattern.matcher(normalized).replaceAll("");
+	}
+	
+	private boolean removeLongNumber(String input){
+		int consecutiveNumberCount = 0;
+	       
+		for (char c : input.toCharArray()) {
+			if(consecutiveNumberCount > 3){
+				return true;
+			}else if(consecutiveNumberCount <= 3){
+				if (c >= '0' && c <= '9'){
+					consecutiveNumberCount ++;
+				}else{
+					consecutiveNumberCount = 0;
+				}
+			}							
+		}
+		
+		return false;		
+	}
+	
+	private String removeSpecialCharacters(String input)
+	{		 
+		boolean isNextLetterInUpperCase = false;
+        StringBuilder newValue = new StringBuilder();
+        
+        for (char c : input.toCharArray())
+        {
+        	if(c == ' ' || c == '.' || c == '_'){
+        		isNextLetterInUpperCase = true;
+        	}
+        	
+        	if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+            {
+            	if(isNextLetterInUpperCase){
+            		c = Character.toUpperCase(c);
+            		isNextLetterInUpperCase = false;
+            	}            	
+            	newValue.append(c);
+            }
+        }
+        
+        return newValue.toString().substring(0, 1).toLowerCase() + newValue.substring(1);     
+	}
+	
 	private Page generateContructor(){
 		
-		String construtor ="\t public "+this.getClass().getSimpleName()+"(WebDriver driver) \n\t { \n\t\t super(driver); \n\t} \n";
+		String construtor ="\t public "+this.getClass().getSimpleName()+"(WebDriver driver) \n\t{ \n\t\t super(driver); \n\t} \n";
 		lines.add(construtor);
 		
 		return this;		 
@@ -141,9 +216,25 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 		return this;		 
 	}
 	
-	private Page includeWebElements(){
-		lines.addAll(webElementsDeclarations);
+	private Page includeWebElements(){		
+		lines.addAll(fixDuplicated(webElementsDeclarations));
 		return this;
+	}
+	
+	private ArrayList<String> fixDuplicated(ArrayList<String> declarations){
+		for (int i = 0; i < declarations.size() - 1; i++) {
+			if((declarations.get(i).contains("WebElement")) && ( ! declarations.get(i).contains(defaultGeneratedVarName))){			
+				int index = 1;
+				for (int j = (i + 1); j < declarations.size() - 1; j++) {
+					String tmpDeclaration = declarations.get(j);
+					if(tmpDeclaration.equals(declarations.get(i))){
+						declarations.set(i, tmpDeclaration.replace(";", index + ";"));
+						declarations.set(j, tmpDeclaration.replace(";", (index + 1) + ";"));
+					}
+				}
+			}
+		}			
+		return declarations;		
 	}
 	
 	private Page includeImports(){
@@ -158,7 +249,7 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 		return this;
 	}
 	
-	private Page includeClassDeclaration(String pageName){
+	private Page includeClassDeclaration(){
 		lines.add("public class "+ this.getClass().getSimpleName() +" extends Page {");
 		lines.add("");
 		return this;
@@ -195,7 +286,8 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 	protected Page mkdFile(String fileName){
 		try {			
 			FileWriter w;      
-	
+			//File directorio = new File(fileName);
+			
 			outputFile = new File(fileName);			
 				w = new FileWriter(outputFile);						
 				bw = new BufferedWriter(w);	
