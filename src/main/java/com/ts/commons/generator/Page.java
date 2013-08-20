@@ -105,8 +105,7 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 		
 		for (PoWebElement webElement: list) {
 			boolean hasXpath = false;
-			WebElement element = null;
-			webElementsDeclarations.add("	@FindBy(" + webElement.attributeBy + " = \"" + webElement.attributeValue + "\")");
+			WebElement element = null;			
 			
 			if(webElement.attributeBy.equals("xpath")){
 				hasXpath = true;
@@ -114,17 +113,21 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 			}		
 			
 			if( ! hasXpath){
+				webElementsDeclarations.add("	@FindBy(" + webElement.attributeBy + " = \"" + webElement.attributeValue + "\")");
 				webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + webElement.attributeValue));
-			}else if(hasXpath){				
-				if( ! element.getText().trim().equals("")){
-					webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getText()));
-				}else if(! element.getAttribute("value").trim().equals("")){
-					webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getAttribute("value")));
-				}else{
-					webElementsDeclarations.add("	WebElement " + defaultGeneratedVarName);
-				}
-			}				
-			webElementsDeclarations.add("");
+			}else if(hasXpath){	
+				if(element.isDisplayed()){
+					webElementsDeclarations.add("	@FindBy(" + webElement.attributeBy + " = \"" + webElement.attributeValue + "\")");
+					if(! element.getText().trim().equals("")){
+						webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getText()));
+					}else if(! element.getAttribute("value").trim().equals("")){
+						webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getAttribute("value")));
+					}else{
+						webElementsDeclarations.add("	WebElement " + defaultGeneratedVarName);
+					}
+					webElementsDeclarations.add("");
+				}				
+			}							
 		}		
 		return this;
 	}
@@ -185,16 +188,13 @@ public abstract class Page extends com.ts.commons.Page implements Component{
             	}            	
             	newValue.append(c);
             }
-        }
-        
+        }        
         return newValue.toString().substring(0, 1).toLowerCase() + newValue.substring(1);     
 	}
 	
-	private Page generateContructor(){
-		
+	private Page generateContructor(){		
 		String construtor ="\t public "+this.getClass().getSimpleName()+"(WebDriver driver) \n\t{ \n\t\t super(driver); \n\t} \n";
-		lines.add(construtor);
-		
+		lines.add(construtor);		
 		return this;		 
 	}
 	
@@ -285,9 +285,7 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 	
 	protected Page mkdFile(String fileName){
 		try {			
-			FileWriter w;      
-			//File directorio = new File(fileName);
-			
+			FileWriter w;      			
 			outputFile = new File(fileName);			
 				w = new FileWriter(outputFile);						
 				bw = new BufferedWriter(w);	
