@@ -115,19 +115,20 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 			if( ! hasXpath){
 				webElementsDeclarations.add("	@FindBy(" + webElement.attributeBy + " = \"" + webElement.attributeValue + "\")");
 				webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + webElement.attributeValue));
+				webElementsDeclarations.add("");
 			}else if(hasXpath){	
-				if(element.isDisplayed()){
+				if(element.isDisplayed() && element.isEnabled()){
 					webElementsDeclarations.add("	@FindBy(" + webElement.attributeBy + " = \"" + webElement.attributeValue + "\")");
 					if(! element.getText().trim().equals("")){
 						webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getText()));
-					}else if(! element.getAttribute("value").trim().equals("")){
+					}else if((element.getAttribute("value") != null) && (! element.getAttribute("value").trim().equals(""))){
 						webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getAttribute("value")));
 					}else{
 						webElementsDeclarations.add("	WebElement " + defaultGeneratedVarName);
 					}
 					webElementsDeclarations.add("");
 				}				
-			}							
+			}
 		}		
 		return this;
 	}
