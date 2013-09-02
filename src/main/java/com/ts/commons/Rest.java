@@ -19,6 +19,7 @@ public abstract class Rest implements Component{
 	
 	private RequestSpecification requestSpecification;
 	private String response;
+	private Headers headers;
 	
 	public Rest()
 	{
@@ -163,13 +164,17 @@ public abstract class Rest implements Component{
 	
 	public Rest get(String url)
 	{
-		setResponse(requestSpecification.when().get(url).asString());
+		Response response = requestSpecification.when().get(url); 
+		setResponse(response.asString());
+		setHeaders(response.headers());
 		return this;
 	}
 	
 	public Rest post(String url)
 	{
-		setResponse(requestSpecification.when().post(url).asString());
+		Response response = requestSpecification.when().get(url); 
+		setResponse(response.asString());
+		setHeaders(response.headers());
 		return this;
 	}
 	
@@ -232,5 +237,15 @@ public abstract class Rest implements Component{
 
 	public void setResponse(String response) {
 		this.response = response;
+	}
+
+
+	public Headers getHeaders() {
+		return headers;
+	}
+
+
+	public void setHeaders(Headers headers) {
+		this.headers = headers;
 	}
 }

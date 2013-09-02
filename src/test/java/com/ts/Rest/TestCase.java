@@ -20,7 +20,7 @@ public class TestCase extends TestCaseUtil{
 		).
 		check(
 				geo.
-				validateCostaRicaComoPais().
+				validateCostaRicaComoPaisAndHeaders().
 				validateCartagoComoCiudad()
 		);
 		
