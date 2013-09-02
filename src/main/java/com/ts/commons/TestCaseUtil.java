@@ -40,7 +40,7 @@ public abstract class TestCaseUtil  implements Component{
 		return this;
 	}
 	
-	protected static void wait(Until until)
+	public static void wait(Until until)
 	{
 		boolean expectedCondition = true;
 		long startTime = System.currentTimeMillis();
