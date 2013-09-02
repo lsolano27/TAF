@@ -18,7 +18,7 @@ import com.jayway.restassured.specification.RequestSpecification;
 public abstract class Rest implements Component{
 	
 	private RequestSpecification requestSpecification;
-	private Response response;
+	private String response;
 	
 	public Rest()
 	{
@@ -163,13 +163,13 @@ public abstract class Rest implements Component{
 	
 	public Rest get(String url)
 	{
-		setResponse(requestSpecification.when().get(url));
+		setResponse(requestSpecification.when().get(url).asString());
 		return this;
 	}
 	
 	public Rest post(String url)
 	{
-		setResponse(requestSpecification.when().post(url));
+		setResponse(requestSpecification.when().post(url).asString());
 		return this;
 	}
 	
@@ -226,11 +226,11 @@ public abstract class Rest implements Component{
 		this.requestSpecification = requestSpecification;
 	}
 
-	public Response getResponse() {
+	public String getResponse() {
 		return response;
 	}
 
-	public void setResponse(Response response) {
+	public void setResponse(String response) {
 		this.response = response;
 	}
 }

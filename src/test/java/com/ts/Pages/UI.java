@@ -2,7 +2,6 @@ package com.ts.Pages;
 
 import org.openqa.selenium.support.PageFactory;
 
-import com.ts.Data.Constant;
 import com.ts.commons.FirefoxDriver;
 
 public class UI {
@@ -21,6 +20,6 @@ public class UI {
 			driver.manage().window().maximize();
 			driver.manage().deleteAllCookies();
 		}				
-		driver.get(Constant.getURL());				
+		driver.get("http://www.testingsoft.com/");				
 	}
 }
