@@ -2,28 +2,37 @@ package com.ts.commons;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import javax.mail.Authenticator;
 import javax.mail.BodyPart;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.NoSuchProviderException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.mail.search.AndTerm;
+import javax.mail.search.BodyTerm;
 import javax.mail.search.ComparisonTerm;
 import javax.mail.search.ReceivedDateTerm;
 import javax.mail.search.SearchTerm;
+import javax.mail.search.SubjectTerm;
 
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.util.MailSSLSocketFactory;
+import com.ts.commons.mail.Gmail;
 
 public abstract class Mail implements Component {
 	
-	 	private IMAPFolder folder ;
-	    private Store store;
 		private  String  url;
 		private  String  emailAccount;
 		private  String  password;
@@ -31,8 +40,9 @@ public abstract class Mail implements Component {
 		private  String  host;
 		private int port;
 		private Properties properties;
+		private Session session;
 
-		public Mail(String url, String host, int port, String emailAccount, String password, String potocol, Properties properties)
+		protected Mail(String url, String host, int port, String emailAccount, String password, String potocol, Properties properties)
 		{
 			this.url = url;
 			this.host = host;
@@ -43,69 +53,101 @@ public abstract class Mail implements Component {
 			this.properties= properties;
 		}
 		
-		
-		public Mail createGMailImapConnection(String emailAccount, String password) throws GeneralSecurityException {
-			  this.url = "imap.googlemail.com";
-			  this.port = 993;
-			  
-			  this.properties = System.getProperties();
-			  MailSSLSocketFactory socketFactory= new MailSSLSocketFactory();
-			  socketFactory.setTrustAllHosts(true);
-	        
-			  properties.setProperty("mail.imap.host", url);
-			  properties.setProperty("mail.imap.port", ""+port);     
-			  properties.setProperty("mail.store.protocol", "imaps");
-			  properties.put("mail.imap.ssl.checkserveridentity", "false");
-			  properties.put("mail.imap.ssl.trust", "*");
-			  properties.put("mail.imaps.ssl.socketFactory", socketFactory);
-			  
-			  return this;
+		public Mail(String emailAccount, String password)
+		{
+			this.emailAccount = emailAccount;
+			this.password = password;
+		}
 	
-	 }
-		
-
 		public abstract Mail then();
 		public abstract Mail and();
 		
 		public Mail Loggin() throws MessagingException  
 		{
-	          Session session = Session.getDefaultInstance(properties, null);	     
-	          store = session.getStore(this.procotol);          
-	          store.connect(this.url,this.emailAccount, this.password);
-	          return this;
+			Authenticator aut = new Authenticator() {
+	      		   protected PasswordAuthentication getPasswordAuthentication() {
+		       		   return new PasswordAuthentication(emailAccount,password);
+	      		   }
+			}; 
+			session = Session.getDefaultInstance(properties, aut);
+	        return this;
 		}
 
 		public Mail Logout() throws MessagingException  
 		{
-	            if (folder != null && folder.isOpen())
-	            { 
-	            	folder.close(true); 
-	            }
+				Store store = getStoreFromProtocol();
 	            if (store != null) 
 	            { 
 	            	store.close(); 
 	            }
 	          return this;
 		}
+		
+		private Store getStoreFromProtocol() throws MessagingException
+		{
+			Store store = session.getStore(this.procotol);  
+			if( !store.isConnected() )
+			{
+				store.connect(this.host,this.emailAccount, this.password);	
+			}
+	        
+	        return store;
+		}
 
+		private IMAPFolder getIMAPFolder(String Location_) throws MessagingException
+		{
+			IMAPFolder folder = (IMAPFolder) getStoreFromProtocol().getFolder(Location_); 
+	        
+	        return folder;
+		}
+		
 		public Message searchMessage(String subject,String Location_,Date DateSearch_) throws MessagingException{
 			Message[] messages= null;
 			
-			folder = (IMAPFolder) store.getFolder(Location_); 
+			IMAPFolder folder = getIMAPFolder(Location_); 
 			folder.open(Folder.READ_WRITE);
 
        	
-            SearchTerm st = new ReceivedDateTerm(ComparisonTerm.EQ,DateSearch_);
+            SearchTerm st = new ReceivedDateTerm(ComparisonTerm.EQ, DateSearch_);
+            SearchTerm st2 = new AndTerm(new SubjectTerm(subject), st); 
 
-			messages = folder.search(st);
-	        	        	        
-	        for (Message message1 : messages) {
-	        	String mgsSubject = message1.getSubject();
-	        	if(mgsSubject.equals(subject)){
-	        		return message1; 	        		
-	        	}
+			messages = searchMessage(st2, Location_);
+			
+			boolean thereIsNoEmails = messages == null || messages.length == 0;
+			
+			if(thereIsNoEmails)
+			{
+				throw new RuntimeException("There is no email with this subject \""+subject+"\" and date "+DateSearch_.toString()+".");
 			}
-			return null;
+			
+			boolean thereAreMoreEmailsWithTheSameSubject = messages.length > 1;
+			if(thereAreMoreEmailsWithTheSameSubject)
+			{
+				Calendar calendar = Calendar.getInstance(); 
+				calendar.setTime(DateSearch_);   
+				int minute = calendar.get(Calendar.MINUTE); 
+				int hour = calendar.get(Calendar.HOUR);  
+				int second = calendar.get(Calendar.SECOND); 
+				
+				if(minute != 0 || hour != 0 || second != 0)
+				{
+					throw new RuntimeException("Imap SearchTerms is not able to use hours, minutes or seconds to filter messages. And there are more than 1 email with \""+subject+"\" as subject date "+DateSearch_.toString()+".");
+				}
+				throw new RuntimeException("More than one email has the same subject \""+subject+"\".");
+			}
+	        	        	        
+			return messages[0];
+		}
+		
+		public Message[] searchMessage(SearchTerm searchTerm, String Location_) throws MessagingException{
+			Message[] messages= null;
+			
+			IMAPFolder folder = getIMAPFolder(Location_); 
+			folder.open(Folder.READ_WRITE);
+
+  			messages = folder.search(searchTerm);
+		
+			return messages;
 		}
 		
 		public String getBody(Message msg) throws MessagingException, IOException {
@@ -138,28 +180,23 @@ public abstract class Mail implements Component {
 			Enumeration content = msg.getAllHeaders();
 			return content;
 		}
+		
+		public void send(String to, String subject, String text ) {
 
+			
+			  try {
+			   MimeMessage message = new MimeMessage(session);
+			   message.setFrom(new InternetAddress(emailAccount));//change accordingly
+			   message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));
+			   message.setSubject(subject);
+			   message.setText(text);
+			   Transport.send(message);
+			 
+			  } catch (MessagingException e) {throw new RuntimeException(e);}
+			 
+			 }
 
-		public IMAPFolder getFolder() {
-			return folder;
-		}
-
-
-		public void setFolder(IMAPFolder folder) {
-			this.folder = folder;
-		}
-
-
-		public Store getStore() {
-			return store;
-		}
-
-
-		public void setStore(Store store) {
-			this.store = store;
-		}
-
-
+		
 		public String getUrl() {
 			return url;
 		}

@@ -35,7 +35,7 @@ public class GeoService extends Rest{
 	}
 	
 	
-	public GeoService validateCostaRicaComoPaisAndHeaders() {
+	public GeoService validateCostaRicaComoPais() {
 		new Validator() {
 			@Override
 			public void Validate() {
@@ -43,6 +43,17 @@ public class GeoService extends Rest{
 				String cuidad = jsonPath.getString("geoplugin_countryName");
 				
 				Assert.assertEquals(cuidad, "Costa Rica");
+				
+			}
+		}.
+		Validate();
+		return this;
+	}
+	
+	public GeoService validateHeaders() {
+		new Validator() {
+			@Override
+			public void Validate() {
 				Assert.assertEquals(getHeaders().get("Server").getValue(), "geoPlugin/3.2.6");
 				Assert.assertEquals(getHeaders().get("Content-Type").getValue(), "text/plain; charset=utf-8");
 				Assert.assertEquals(getHeaders().get("Content-Length").getValue(), "764");
