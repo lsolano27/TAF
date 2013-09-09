@@ -4,6 +4,7 @@ import org.testng.Assert;
 
 import com.ts.commons.Component;
 import com.ts.commons.Shell;
+import com.ts.commons.Validator;
 
 public class MiPc extends Shell{
 	
@@ -14,9 +15,15 @@ public class MiPc extends Shell{
 		
 	}
 	
-	public MiPc validateExpectedOutPut() {
-		Assert.assertEquals(pingIsOk, true, "ping comand was failed");
-		return this;
+	public Validator validateExpectedOutPut() {
+		return new Validator() {
+			
+			@Override
+			public void Validate() {
+				Assert.assertEquals(pingIsOk, true, "ping comand was failed");
+				
+			}
+		};
 	}
 
 	public MiPc connect(String ip, String user, String password)
