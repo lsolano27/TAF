@@ -21,7 +21,8 @@ public class TestCase extends TestCaseUtil{
 				connect(linux,user, password, user)
 		).
 		check(
-				miPc.validateExpectedOutPut()
+				miPc.
+				validateExpectedOutPut()
 		);
 		
 		
