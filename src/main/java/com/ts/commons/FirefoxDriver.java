@@ -1,26 +1,12 @@
 package com.ts.commons;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import com.ts.commons.maven.MavenConfiguration;
 
 
-public class FirefoxDriver extends org.openqa.selenium.firefox.FirefoxDriver  {
-	
-	public static final int IMPLICT_TIME = 5;
-	public static final TimeUnit IMPLICT_TIME_UNIT = TimeUnit.MINUTES;
-	
+public class FirefoxDriver extends org.openqa.selenium.firefox.FirefoxDriver implements TsDriver{
 	
 	public FirefoxDriver()
 	{
@@ -61,11 +47,7 @@ public class FirefoxDriver extends org.openqa.selenium.firefox.FirefoxDriver  {
 			}
 		};
 		ffValidations.Validate();
-		
-		
-		
-		
-		
+	
 	}
 	
 	 public void get(String domine, String user, String pass)
@@ -156,7 +138,5 @@ public class FirefoxDriver extends org.openqa.selenium.firefox.FirefoxDriver  {
 	 public String getBrowserVersion()
 	 {
 		 return this.getCapabilities().getVersion();
-	 }
-	 
-	 
+	 }	 
 }

@@ -1,7 +1,6 @@
 package com.ts.commons;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -13,7 +12,6 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.NoSuchProviderException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
@@ -21,15 +19,12 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.AndTerm;
-import javax.mail.search.BodyTerm;
 import javax.mail.search.ComparisonTerm;
 import javax.mail.search.ReceivedDateTerm;
 import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 
 import com.sun.mail.imap.IMAPFolder;
-import com.sun.mail.util.MailSSLSocketFactory;
-import com.ts.commons.mail.Gmail;
 
 public abstract class Mail implements Component {
 	

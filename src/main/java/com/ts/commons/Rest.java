@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.util.Map;
 
 import com.jayway.restassured.authentication.FormAuthConfig;
+import com.jayway.restassured.internal.mapper.ObjectMapperType;
+import com.jayway.restassured.mapper.ObjectMapper;
 import com.jayway.restassured.response.Cookie;
 import com.jayway.restassured.response.Cookies;
 import com.jayway.restassured.response.Header;
@@ -89,6 +91,24 @@ public abstract class Rest implements Component{
 	public Rest body(Object object) 
 	{
 		requestSpecification.body(object); 
+		return this;
+	}
+	
+	public Rest body(String body)
+	{
+		requestSpecification.body(body); 
+		return this;
+	}
+	
+	public Rest body(Object object, ObjectMapper mapper)
+	{
+		requestSpecification.body(object, mapper); 
+		return this;
+	}
+	
+	public Rest body(Object object, ObjectMapperType mapperType)
+	{
+		requestSpecification.body(object,  mapperType); 
 		return this;
 	}
 	
