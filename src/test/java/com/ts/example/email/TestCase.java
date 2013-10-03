@@ -14,8 +14,8 @@ public class TestCase extends TestCaseUtil{
 	@Test
 	public void test() throws MessagingException, IOException, ParseException
 	{
-		String account ="";/*valid accouunt@gmail.com.*/
-		String password = "";/*proper password.*/
+		String account ="cguillen@testingsoft.com";/*valid accouunt@gmail.com.*/
+		String password = "cguillen123";/*proper password.*/
 		
 		MyGmail gmail = new MyGmail(account, password);
 		

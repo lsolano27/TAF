@@ -6,11 +6,37 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 
 public class ChromeDriver extends org.openqa.selenium.chrome.ChromeDriver implements  TsDriver{
-	private ChromeDriverService chromeService;
 
-	private ChromeDriver()
+	public ChromeDriver()
 	{
+		super();
+		manage().timeouts().implicitlyWait(IMPLICT_TIME, IMPLICT_TIME_UNIT );
 	}
+	
+	public ChromeDriver(ChromeDriverService service)
+	{
+		super(service);
+		manage().timeouts().implicitlyWait(IMPLICT_TIME, IMPLICT_TIME_UNIT );
+	}
+	
+	public ChromeDriver(org.openqa.selenium.Capabilities capabilities)
+	{
+		super(capabilities);
+		manage().timeouts().implicitlyWait(IMPLICT_TIME, IMPLICT_TIME_UNIT );
+	}
+	
+	public ChromeDriver(ChromeOptions options)
+	{
+		super(options);
+		manage().timeouts().implicitlyWait(IMPLICT_TIME, IMPLICT_TIME_UNIT );
+	}
+	
+	public ChromeDriver(ChromeDriverService service, ChromeOptions options)
+	{
+		super(service, options);
+		manage().timeouts().implicitlyWait(IMPLICT_TIME, IMPLICT_TIME_UNIT );
+	}
+	
 	
 	private static void loadExe()
 	{
@@ -20,31 +46,31 @@ public class ChromeDriver extends org.openqa.selenium.chrome.ChromeDriver implem
 	public static ChromeDriver createInstance()
 	{
 		loadExe();
-		return (ChromeDriver) new org.openqa.selenium.chrome.ChromeDriver();
+		return new ChromeDriver();
 	}
 	
 	public static ChromeDriver createInstance(ChromeDriverService service)
 	{
 		loadExe();
-		return  (ChromeDriver) new org.openqa.selenium.chrome.ChromeDriver(service);
+		return new ChromeDriver(service);
 	}
 	
 	public static ChromeDriver createInstance(org.openqa.selenium.Capabilities capabilities)
 	{
 		loadExe();
-		return (ChromeDriver)new org.openqa.selenium.chrome.ChromeDriver(capabilities);
+		return new ChromeDriver(capabilities);
 	}
 	
 	public static ChromeDriver createInstance(ChromeOptions options)
 	{
 		loadExe();
-		return (ChromeDriver)new org.openqa.selenium.chrome.ChromeDriver(options);
+		return new ChromeDriver(options);
 	}
 	
 	public static ChromeDriver createInstance(ChromeDriverService service, ChromeOptions options)
 	{
 		loadExe();
-		return (ChromeDriver)new org.openqa.selenium.chrome.ChromeDriver(service, options);
+		return new ChromeDriver(service, options);
 	}
 	
 	

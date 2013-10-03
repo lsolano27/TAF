@@ -1,5 +1,6 @@
 package com.ts.commons;
 
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.browserlaunchers.WindowsProxyManager;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
@@ -9,10 +10,28 @@ import bsh.Capabilities;
 
 public class InternetExplorerDriver extends org.openqa.selenium.ie.InternetExplorerDriver implements  TsDriver{
 
-	private InternetExplorerDriver()
+	public InternetExplorerDriver()
 	{
+		super();
+		manage().timeouts().implicitlyWait(IMPLICT_TIME, IMPLICT_TIME_UNIT );
 	}
 	
+	public InternetExplorerDriver(org.openqa.selenium.Capabilities capabilities) {
+		  super (capabilities);
+		  manage().timeouts().implicitlyWait(IMPLICT_TIME, IMPLICT_TIME_UNIT );
+	}
+
+	  public InternetExplorerDriver(int port) {
+		super(port);
+		manage().timeouts().implicitlyWait(IMPLICT_TIME, IMPLICT_TIME_UNIT );
+	  }
+	
+	  public InternetExplorerDriver(InternetExplorerDriverService service) {
+		super(service);
+		manage().timeouts().implicitlyWait(IMPLICT_TIME, IMPLICT_TIME_UNIT );
+	  }
+	
+
 	private static void loadExe()
 	{
 		System.setProperty("webdriver.ie.driver", "src/main/resources/IEDriverServer.exe");
@@ -20,35 +39,24 @@ public class InternetExplorerDriver extends org.openqa.selenium.ie.InternetExplo
 	
 	public static InternetExplorerDriver createInstance() {
 		loadExe();
-		return (InternetExplorerDriver) new org.openqa.selenium.ie.InternetExplorerDriver();
+		return new InternetExplorerDriver();
 	}
 
 	public static InternetExplorerDriver createInstance(org.openqa.selenium.Capabilities capabilities) {
 		  loadExe();
-		  return (InternetExplorerDriver) new org.openqa.selenium.ie.InternetExplorerDriver(capabilities);
+		  return  new InternetExplorerDriver(capabilities);
 	}
 
 	  public static InternetExplorerDriver createInstance(int port) {
 		  loadExe();
-			return (InternetExplorerDriver) new org.openqa.selenium.ie.InternetExplorerDriver(port);
+			return new InternetExplorerDriver(port);
 	  }
 	
 	  public static InternetExplorerDriver createInstance(InternetExplorerDriverService service) {
 		  loadExe();
-			return (InternetExplorerDriver) new org.openqa.selenium.ie.InternetExplorerDriver();
+			return  new InternetExplorerDriver(service);
 	  }
-	
-	  public static InternetExplorerDriver createInstance(InternetExplorerDriverService service, Capabilities capabilities) {
-		  loadExe();
-			return (InternetExplorerDriver) new org.openqa.selenium.ie.InternetExplorerDriver();
-	  }
-	
-	  public static InternetExplorerDriver createInstance(WindowsProxyManager proxy, InternetExplorerDriverService service, Capabilities capabilities, int port) {
-		  loadExe();
-			return (InternetExplorerDriver) new org.openqa.selenium.ie.InternetExplorerDriver();
-	  }
-
-	
+		
 	public void quit()
     {
 		 super.quit();
