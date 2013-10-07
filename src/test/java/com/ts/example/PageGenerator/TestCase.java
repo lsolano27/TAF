@@ -2,6 +2,7 @@ package com.ts.example.PageGenerator;
 
 import java.io.IOException;
 
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.testng.annotations.Test;
 
 import com.ts.commons.FirefoxDriver;

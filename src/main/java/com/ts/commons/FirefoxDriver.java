@@ -1,6 +1,7 @@
 package com.ts.commons;
 
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.interactions.Actions;
 
 import com.ts.commons.maven.MavenConfiguration;
@@ -11,6 +12,17 @@ public class FirefoxDriver extends org.openqa.selenium.firefox.FirefoxDriver imp
 	public FirefoxDriver()
 	{
 		super();
+		afterSetUp();
+	
+	}
+	public FirefoxDriver(FirefoxProfile profile)
+	{
+		super(profile);
+		afterSetUp();
+	}
+	
+	private void afterSetUp()
+	{
 		manage().timeouts().implicitlyWait(IMPLICT_TIME, IMPLICT_TIME_UNIT );
 		
 		Validator ffValidations= new Validator() {
@@ -47,7 +59,6 @@ public class FirefoxDriver extends org.openqa.selenium.firefox.FirefoxDriver imp
 			}
 		};
 		ffValidations.Validate();
-	
 	}
 	
 	 public void get(String domine, String user, String pass)
