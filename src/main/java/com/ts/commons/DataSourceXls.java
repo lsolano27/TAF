@@ -27,7 +27,7 @@ public class DataSourceXls extends DataSource{
 		Sheet sheet = book.getSheet(sheetNum);
 		int numberOfColumns = sheet.getColumns();
 		int rows = getRows(sheet);
-		data = new Object[rows - 1][numberOfColumns];
+		data = new Object[rows - (rowToBeginRead - 1)][numberOfColumns];
 		
 		 for (int row = rowToBeginRead; row < sheet.getRows(); row++) {	  	    	  
 	    	  for (int colum = 0; colum < sheet.getColumns(); colum++) {	    		  

@@ -37,8 +37,7 @@ public class DataSouceContactUs extends TestCaseUtil {
 	}	
 	
 	@Test(dataProvider = "data")
-	public void test(String name, String company, String position, String phone, String mail, 
-					 String country, String meansOfContact, String comments) throws Exception{	
+	public void test(String name, String company, String position, String phone, String mail, String country, String meansOfContact, String comments) throws Exception{	
 		using(   
 				((ContactUsPage) currentPage)
 								.and()

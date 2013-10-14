@@ -18,6 +18,7 @@ public class TestCase extends TestCaseUtil{
 				param("ip", "181.193.68.126").
 				get("http://www.geoplugin.net/json.gp")
 		).
+		and().
 		check(
 				geo.
 				validateHeaders().
