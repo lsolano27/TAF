@@ -6,8 +6,13 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PushbackInputStream;
+import java.io.StringWriter;
+
+import org.apache.commons.io.IOUtils;
 
 import com.nemo.javaexpect.shell.exception.ConnectionException;
+import com.ts.commons.OperatingSystem;
+import com.ts.commons.Telnet;
 
 /**
  * Filter the VT100 control sequences
@@ -19,9 +24,12 @@ public class VT100InputStream extends FilterInputStream implements Runnable{
 	static final String ESC_pattern = "[ -/]*([0-Z\\-~]|\\[[ -/]*[0-?]*[@-~])";
 	private PipedOutputStream outputStream;
 	private PipedInputStream inputStream;
+	private StringBuilder result;
 	private void internWrite(String s) {
 		try {
-		//	System.out.print(s);
+			//System.out.println(s);
+			String os = Telnet.os.equals(OperatingSystem.WINDOWS_OS) ? "\r" : "";
+			result.append(s + os);
 			outputStream.write(s.getBytes());
 		} catch (IOException e) {
 			System.out.println("not enough buffer " + e.getMessage());
@@ -37,7 +45,7 @@ public class VT100InputStream extends FilterInputStream implements Runnable{
 	}
 	public VT100InputStream(InputStream in) {
 		super(new PushbackInputStream(in));
-
+		result = new StringBuilder();
 		createPipeInputOutputStream();
 	}
 
@@ -132,6 +140,10 @@ public class VT100InputStream extends FilterInputStream implements Runnable{
 									// (P)
 					continue;
 				}
+				if(b == -1){
+					Thread.interrupted();
+					break;
+				}
 				else { 
 					pushChar(b);
 				    handleASCIISequences(); 
@@ -154,6 +166,7 @@ public class VT100InputStream extends FilterInputStream implements Runnable{
 				build.append((char)b);
 				b = getChar();
 			}
+		
 			
 			if (isASCII(b)) {
 				// no more char is readable
@@ -210,5 +223,9 @@ public class VT100InputStream extends FilterInputStream implements Runnable{
 	}
 	private byte getChar() throws IOException {
 			return (byte) in.read();
+	}
+	
+	public String getResult() throws IOException{
+		return result.toString();		
 	}
 }
