@@ -192,7 +192,23 @@ public abstract class Rest implements Component{
 	
 	public Rest post(String url)
 	{
-		Response response = requestSpecification.when().get(url); 
+		Response response = requestSpecification.when().post(url); 
+		setResponse(response.asString());
+		setHeaders(response.headers());
+		return this;
+	}
+	
+	public Rest put(String url)
+	{
+		Response response = requestSpecification.when().put(url); 
+		setResponse(response.asString());
+		setHeaders(response.headers());
+		return this;
+	}
+	
+	public Rest delete(String url)
+	{
+		Response response = requestSpecification.when().delete(url); 
 		setResponse(response.asString());
 		setHeaders(response.headers());
 		return this;

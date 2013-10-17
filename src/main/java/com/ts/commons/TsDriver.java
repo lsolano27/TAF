@@ -6,9 +6,9 @@ import org.openqa.selenium.WebElement;
 
 public interface TsDriver {
 	
-	static final int IMPLICT_TIME = 5;
+	static final int IMPLICT_TIME = 30;
 	
-	static final TimeUnit IMPLICT_TIME_UNIT = TimeUnit.MINUTES;
+	static final TimeUnit IMPLICT_TIME_UNIT = TimeUnit.SECONDS;
 	
 	 public void get(String domine, String user, String pass);
 
