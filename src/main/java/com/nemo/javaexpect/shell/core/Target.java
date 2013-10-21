@@ -105,4 +105,7 @@ public interface Target {
 
 	public Target setShellID(String id);
 	public String getShellID();
+
+	public String getKey();
+	public Target setKey( String key);
 }

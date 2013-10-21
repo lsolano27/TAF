@@ -1,6 +1,7 @@
 package com.jssc;
 
 import jssc.SerialPortException;
+
 import org.junit.Test;
 
 import com.ts.commons.Serial;

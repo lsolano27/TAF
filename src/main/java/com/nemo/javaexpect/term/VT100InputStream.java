@@ -6,9 +6,6 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PushbackInputStream;
-import java.io.StringWriter;
-
-import org.apache.commons.io.IOUtils;
 
 import com.nemo.javaexpect.shell.exception.ConnectionException;
 import com.ts.commons.OperatingSystem;

@@ -1,12 +1,8 @@
 package com.ts.commons;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.browserlaunchers.WindowsProxyManager;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.interactions.Actions;
-
-import bsh.Capabilities;
 
 public class InternetExplorerDriver extends org.openqa.selenium.ie.InternetExplorerDriver implements  TsDriver{
 

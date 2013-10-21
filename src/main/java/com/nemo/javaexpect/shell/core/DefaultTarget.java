@@ -24,6 +24,7 @@ public class DefaultTarget implements Target {
 	private String loginName;
 	private String loginPassword = "";
 	private String loginPrompt = ".*(>|\\$)";
+	private String key;
 	
 	/** Indicate if autologin the shell
 	 * @see #isAutoLogin()
@@ -325,5 +326,12 @@ public class DefaultTarget implements Target {
 	
 	public String getShellID() {
 		return shellID;
+	}
+	public String getKey() {
+		return key;
+	}
+	public Target setKey(String key) {
+		this.key = key;
+		return this;
 	}
 }

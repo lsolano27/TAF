@@ -166,6 +166,11 @@ public class SshDriver extends DefaultShellDriver {
 	private Session createJschSession() throws JSchException {
 		Session session;
 		JSch jsch = new JSch();
+		boolean targetRequiresKey = target.getKey() != null;
+		if(targetRequiresKey)
+		{
+			jsch.addIdentity(target.getKey());
+		}
 		session = jsch.getSession(target.getLoginName(), target.getHost(), target.getPort());
 		session.setConfig("StrictHostKeyChecking", "no");
 		session.setPassword(target.getLoginPassword());

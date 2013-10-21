@@ -22,4 +22,6 @@ public interface ShellDriver {
 	ShellDriver setCommandTimeout(int timeout);
 	/** send a "ENTER" key to remote after send the user password*/
 	ShellDriver setSendInitialCR(boolean sendInitialCR);
+	
+	//TODO agregar addIdentity*****************************
 }
