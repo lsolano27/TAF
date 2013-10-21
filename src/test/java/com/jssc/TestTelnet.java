@@ -8,7 +8,7 @@ import com.ts.commons.TelnetWindows;
 public class TestTelnet{
 
 	@Test
-	public void TestReadFromSerial(){
+	public void testTelnet(){
 		
 		String wirelessName = "Test";
 		String wifiInterface = "eth1";

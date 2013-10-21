@@ -8,7 +8,7 @@ import com.ts.commons.Serial;
 public class TestSerial{
 	
 	@Test
-	public void BB() throws SerialPortException, InterruptedException{
+	public void testSerial() throws SerialPortException, InterruptedException{
 		Serial s = new Serial("COM3");
 		s.open();		
 		s.setConnectionParameters(115200, 8, 1, 0);
