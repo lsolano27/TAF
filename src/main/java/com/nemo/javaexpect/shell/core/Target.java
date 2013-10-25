@@ -9,8 +9,6 @@ package com.nemo.javaexpect.shell.core;
  */
 public interface Target {
 
-	/** Default timeout for the shell when execute a command */
-	public final static int DEFAULT_COMMAND_TIMEOUT = 300;
 	public final static int INVALID_PORT = -1;
 
 	public boolean isAutoLogin();

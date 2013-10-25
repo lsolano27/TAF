@@ -1,5 +1,7 @@
 package com.nemo.javaexpect.shell.core;
 
+import com.ts.commons.TsDriver;
+
 /**
  * Define a remote target. it includes the host IP or name, login name and login password...
  * @author canhual
@@ -53,7 +55,7 @@ public class DefaultTarget implements Target {
 	private boolean autoSU = false;; 
 	
 	/** the timeout setting for command execution. in seconds */
-	private int commandTimeout = DEFAULT_COMMAND_TIMEOUT;
+	private int commandTimeout = TsDriver.IMPLICT_TIME;
 
 	private boolean suWithLoginShell = false;
 
