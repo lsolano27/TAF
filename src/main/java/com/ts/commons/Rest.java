@@ -231,6 +231,14 @@ public abstract class Rest implements Component{
 		return this;
 	}
 	
+	public Rest patch(String url, Object pathParams)
+	{
+		Response response = requestSpecification.when().patch(url, pathParams); 
+		setResponse(response.asString());
+		setHeaders(response.headers());
+		return this;
+	}
+	
 	public Rest multiPart(File file)
 	{
 		requestSpecification.multiPart(file); 
