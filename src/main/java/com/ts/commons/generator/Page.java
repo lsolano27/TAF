@@ -22,33 +22,42 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 	private ArrayList<String> lines = new ArrayList<String>();
 	private ArrayList<PoWebElement> arrayInLines = new ArrayList<PoWebElement>();
 	private ArrayList<String> webElementsDeclarations = new ArrayList<String>();
-	private PoJavaScriptExecutor poJavaScriptExecuto;
 	private PoWebElement[] preDefinedWebElements;
 	private File outputFile = null;
 	private boolean firstWrite= false;	
 	private BufferedWriter bw;
 	private PrintWriter wr;
 	private final String defaultGeneratedVarName = "'Sorry, please define this variable name';";
+	ElementType[] selectorsToFind;
 	
 	public PoWebElement[] getPredifinedWebElements()
 	{
 		return null;
 	}
 	
-	public Page(WebDriver driver)
-	{
-		poJavaScriptExecuto = new PoJavaScriptExecutor(driver);
+	public Page(WebDriver driver, ElementType... selectorsToFind){
 		preDefinedWebElements = getPredifinedWebElements();
 		if( preDefinedWebElements == null)
-		{
+		{			
+			this.selectorsToFind = validateSelectorsToFind(selectorsToFind);
 			generatePO(driver);	
 		}
+	}
+	
+	private ElementType[] validateSelectorsToFind(ElementType[] selectorsToFind){
+		for (ElementType elementType : selectorsToFind) {
+			if(elementType.equals(ElementType.ALL)){	
+				selectorsToFind = new ElementType[]{ElementType.ALL};
+				return selectorsToFind;
+			}
+		}
+		return selectorsToFind;
 	}
 	
 	private Page generatePO (WebDriver driver) {
 		String className = this.getClass().getName();
 		className = className.replaceAll("\\.", "/");
-		className = className+".java";
+		className = className + ".java";
 		
 		String diskLocation = this.getClass().getResource("").getPath();
 		int reference = diskLocation.lastIndexOf("/target");
@@ -66,7 +75,7 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 		return this;			
 	}
 	
-	protected Page generateFile(String pageName){	
+	protected Page generateFile(String pageName, WebDriver driver){
 		this.pageName = pageName;
 		
 		return
@@ -81,14 +90,14 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 					.includeWebElements()
 					.and()
 					.includeOverrides(pageName)
-					.createFile();
+					.createFile(driver);
 	}
 	
-	private Page createFile(){
+	private Page createFile(WebDriver driver){
 		mkdFile(pageName)
 				.printElementsDeclarations(lines)
 				.CloseFile();
-		poJavaScriptExecuto.succesAlert();
+		new PoJavaScriptExecutor(driver).succesAlert();
 		return this;
 	}
 	
@@ -110,7 +119,7 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 			if(webElement.attributeBy.equals("xpath")){
 				hasXpath = true;
 				element = driver.findElement(By.xpath(webElement.attributeValue));
-			}		
+			}
 			
 			if( ! hasXpath){
 				webElementsDeclarations.add("	@FindBy(" + webElement.attributeBy + " = \"" + webElement.attributeValue + "\")");
@@ -123,11 +132,13 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 						webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getText()));
 					}else if((element.getAttribute("value") != null) && (! element.getAttribute("value").trim().equals(""))){
 						webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getAttribute("value")));
+					}else if((element.getAttribute("title") != null) && (! element.getAttribute("title").trim().equals(""))){
+						webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getAttribute("title")));
 					}else{
 						webElementsDeclarations.add("	WebElement " + defaultGeneratedVarName);
 					}
 					webElementsDeclarations.add("");
-				}				
+				}
 			}
 		}		
 		return this;
@@ -268,14 +279,6 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 		return this;
 	}
 	
-	public Page and(){
-		return this;
-	}
-
-	public Page then(){
-		return this;
-	}
-
 	public PoWebElement[] getPreDefinedWebElements() {
 		return preDefinedWebElements;
 	}
@@ -328,4 +331,12 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 		}		
 		return this;
 	}	
+	
+	public Page and(){
+		return this;
+	}
+
+	public Page then(){
+		return this;
+	}
 }

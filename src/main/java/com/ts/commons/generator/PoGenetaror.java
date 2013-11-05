@@ -5,11 +5,9 @@ import java.util.List;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-
  public class PoGenetaror{	
 	private String newPageName;
-	private WebDriver driver;
-	
+	private WebDriver driver;	
 	
 	public PoGenetaror(WebDriver driver) {
 		this.driver = driver;
@@ -22,14 +20,8 @@ import org.openqa.selenium.WebElement;
 	
 	public PoGenetaror generatePageObject(Page  page){
 		PoPageObject aPage = new PoPageObject(driver, page);		
-		List<WebElement> frames = aPage.getFrames();		
-		
-		generate(
-			aPage, frames
-		)
-		.createFile(
-			aPage.createClassFile(newPageName)
-		);	
+		List<WebElement> frames = aPage.getFrames();			
+		generate(aPage, frames).createFile(aPage.createClassFile(newPageName));	
 		return this;		
 	}	
 	

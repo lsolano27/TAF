@@ -11,6 +11,8 @@ public class PoWebElement{
 	private static final String[] criterias = {"id","name"};
 	private PoJavaScriptExecutor poJavaScriptExecutor;
 	
+	public PoWebElement(){}
+	
 	public PoWebElement(WebDriver driver)
 	{
 		poJavaScriptExecutor = new PoJavaScriptExecutor(driver);
@@ -43,5 +45,5 @@ public class PoWebElement{
 	
 	public String getTagName(WebElement element){
 		return element.getTagName();			
-	}
+	}	
 }
