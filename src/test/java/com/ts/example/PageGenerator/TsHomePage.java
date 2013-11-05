@@ -1,18 +1,16 @@
 package com.ts.example.PageGenerator; 
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-
-import com.ts.commons.generator.ElementType;
 import com.ts.commons.generator.Page;
 import com.ts.commons.generator.PoWebElement;
+import org.openqa.selenium.WebDriver;
 
 public class TsHomePage extends Page {
 
 	 public TsHomePage(WebDriver driver) 
 	{ 
-			 super(driver, ElementType.INPUT, ElementType.BUTTON); 
+		 super(driver); 
 	} 
 
 	/* 
@@ -47,7 +45,7 @@ public class TsHomePage extends Page {
 
 	//*******************
 	//*	FRAME OR IFRAME *
-	//*******************
+	//******************* 
 
 	@FindBy(id = "homestate")
 	WebElement inputHomestate;
@@ -57,6 +55,9 @@ public class TsHomePage extends Page {
 
 	@FindBy(id = "d_daddr")
 	WebElement inputDDaddr;
+
+	@FindBy(xpath = ".//*[@id='dir_wp_template']/div[1]/div[2]/div[1]/input[1]") // this element is not enable or not displayed
+	WebElement var6;
 
 	@FindBy(id = "iwdiraddr")
 	WebElement inputIwdiraddr;
@@ -69,6 +70,21 @@ public class TsHomePage extends Page {
 
 	@FindBy(id = "saveplacebutton")
 	WebElement buttonSaveplacebutton;
+
+	@FindBy(xpath = ".//*[@id='dirfrm']/div[2]/div[1]/input[1]") // this element is not enable or not displayed
+	WebElement var5;
+
+	@FindBy(xpath = ".//*[@id='snfrm']/div[1]/div[1]/input[1]") // this element is not enable or not displayed
+	WebElement var4;
+
+	@FindBy(xpath = ".//*[@id='earth_button']/div[2]/div[1]/div[2]/div[1]/input[1]") // this element is not enable or not displayed
+	WebElement var3;
+
+	@FindBy(xpath = ".//*[@id='hmtctl']/div[1]/div[3]/div[1]/div[1]/div[2]/div[3]/div[2]/div[1]/input[1]") // this element is not enable or not displayed
+	WebElement var2;
+
+	@FindBy(xpath = ".//*[@id='tbo_checkbox_jstemplate']/input[1]") // this element is not enable or not displayed
+	WebElement var;
 
 	public TsHomePage and() {
 		return this;

@@ -46,4 +46,12 @@ public class PoWebElement{
 	public String getTagName(WebElement element){
 		return element.getTagName();			
 	}	
+	
+	public String getAttributeBy() {
+		return attributeBy;
+	}
+
+	public String getAttributeValue() {
+		return attributeValue;
+	}
 }

@@ -3,6 +3,7 @@ package com.ts.example.PageGenerator;
 import java.io.IOException;
 
 import org.openqa.selenium.WebDriver;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.ts.commons.FirefoxDriver;
@@ -41,7 +42,10 @@ public class TestCase extends TestCaseUtil{
 	{
 		WebDriver driver = new FirefoxDriver();
 		driver.get("http://testingsoft.com/contact_us");
-		new TsHomePage(driver);
+		TsHomePage home = new TsHomePage(driver);	
 		
+		Assert.assertEquals(home.getPredifinedWebElements()[0].getAttributeBy(),"name", "Incorrect first element BY");
+		Assert.assertEquals(home.getPredifinedWebElements()[0].getAttributeValue(),"fname", "Incorrect first element VALUE");		
+		Assert.assertEquals(home.getPredifinedWebElements().length,20, "Incorrect num of elements");
 	}
 }

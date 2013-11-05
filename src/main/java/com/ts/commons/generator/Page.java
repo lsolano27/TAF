@@ -105,11 +105,9 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 		arrayInLines.addAll(list);
 				
 		if(numOfFrames > 0){
-			webElementsDeclarations.add("");
-			webElementsDeclarations.add("	//*******************");
+			webElementsDeclarations.add("\n	//*******************");
 			webElementsDeclarations.add("	//*	FRAME OR IFRAME *");
-			webElementsDeclarations.add("	//*******************");
-			webElementsDeclarations.add("");
+			webElementsDeclarations.add("	//******************* \n");
 		}
 		
 		for (PoWebElement webElement: list) {
@@ -129,15 +127,17 @@ public abstract class Page extends com.ts.commons.Page implements Component{
 				if(element.isDisplayed() && element.isEnabled()){
 					webElementsDeclarations.add("	@FindBy(" + webElement.attributeBy + " = \"" + webElement.attributeValue + "\")");
 					if(! element.getText().trim().equals("")){
-						webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getText()));
+						webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getText()) + "\n");
 					}else if((element.getAttribute("value") != null) && (! element.getAttribute("value").trim().equals(""))){
-						webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getAttribute("value")));
+						webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getAttribute("value")) + "\n");
 					}else if((element.getAttribute("title") != null) && (! element.getAttribute("title").trim().equals(""))){
-						webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getAttribute("title")));
+						webElementsDeclarations.add("	WebElement " + generateVarName(webElement.attributeTag + "." + element.getAttribute("title")) + "\n");
 					}else{
-						webElementsDeclarations.add("	WebElement " + defaultGeneratedVarName);
+						webElementsDeclarations.add("	WebElement " + defaultGeneratedVarName + "\n");
 					}
-					webElementsDeclarations.add("");
+				}else{
+					webElementsDeclarations.add("	@FindBy(" + webElement.attributeBy + " = \"" + webElement.attributeValue + "\") // this element is not enable or not displayed");
+					webElementsDeclarations.add("	WebElement " + defaultGeneratedVarName + "\n");
 				}
 			}
 		}		
