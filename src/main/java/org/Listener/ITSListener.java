@@ -88,7 +88,7 @@ public class ITSListener implements ITestListener{
 		System.out.println("TestID: " + testID);
 		System.out.println("Status: " + status);		
 		System.out.println("Time: " + time);
-		System.out.println("http://"+ ipServer +"/AutomationExecutionInfoListener");
+		System.out.println("http://"+ ipServer +"/orquestador/AutomationExecutionInfoListener.html");
 	}
 	
 	private void sendToServer(){		
@@ -98,6 +98,6 @@ public class ITSListener implements ITestListener{
 				.param("testPlan", testPlan)
 				.param("time", time)
 		.when()
-		.post("http://"+ ipServer +"/AutomationExecutionInfoListener");
+		.post("http://"+ ipServer +"/orquestador/AutomationExecutionInfoListener.html");
 	}
 }
