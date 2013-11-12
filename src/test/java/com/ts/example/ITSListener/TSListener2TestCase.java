@@ -10,7 +10,7 @@ import com.ts.commons.Validator;
 
 
 
-public class TSListenerTestCase extends TSListener {
+public class TSListener2TestCase extends TSListener {
 	protected UI uiInstance;
 	ExampleBasePage currentPage;
 	
@@ -20,8 +20,8 @@ public class TSListenerTestCase extends TSListener {
 	}
 
 	@Test
-	@Parameters("id")
-	public void test(@Optional("MiID") String id) {
+	@Parameters("tcId")
+	public void test(@Optional("MyID_#2") String id) {
 		using(
 				currentPage = uiInstance.getHomePage()
 										.aCcontactUS()

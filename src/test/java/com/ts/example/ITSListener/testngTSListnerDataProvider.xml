@@ -3,11 +3,10 @@
 <suite name="Suite" parallel="none">    
 	<parameter name="ip" value="5.5.1.87:8080" />
 	<parameter name="build" value="1.0" />
-	<parameter name="testPlan" value="myTestPlanName" />
+	<parameter name="testPlan" value="myTestPlanNameDataProvider" />
 	<test name="Test">
 	   <classes>
-			<class name="com.ts.example.ITSListener.TSListener1TestCase" />
-			<class name="com.ts.example.ITSListener.TSListener2TestCase" />
+			<class name="com.ts.example.ITSListener.TSListener3DataProviderTestCase" />
 		</classes>
 	</test> <!-- Test -->
 </suite> <!-- Suite -->

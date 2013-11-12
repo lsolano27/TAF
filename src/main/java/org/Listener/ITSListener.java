@@ -58,14 +58,9 @@ public class ITSListener implements ITestListener{
 		getTimeAndStatus(result);
 	}
 
-	/**
-	 * This method is executed as soon as the TC has finished.
-	 * Call methods to print information and send it to the "orquestador"
-	 */
 	@Override
 	public void onFinish(ITestContext context) {
-		printAll();
-		sendToServer();
+	
 	}	
 	
 	/**
@@ -78,9 +73,16 @@ public class ITSListener implements ITestListener{
 		testPlan = context.getSuite().getParameter("testPlan");
 	}
 	
+	/**
+	 * This method gets the time of the TC, its status,
+	 * print all gotten information and send it.
+	 * @param result
+	 */
 	private void getTimeAndStatus(ITestResult result) {
 		time =  (result.getEndMillis() - result.getStartMillis()) / 1000;
 		status = getTestStatus(result);
+		printAll();
+		sendToServer();
 	}	
 	
 	/**
@@ -134,14 +136,14 @@ public class ITSListener implements ITestListener{
 	 * This method send the gotten information to the "orquestador".
 	 */
 	private void sendToServer(){
-		if(ipServer != "" ||  ipServer != null){
+		if(ipServer != "" &&  ipServer != null){
 			if((testID != "" ||  testID != null) && (status != "" ||  status != null) && (build != "" ||  build != null) && (testPlan != "" ||  testPlan != null) && (time > 0)){			
 				given().param("tcId", testID)
 					   .param("status", status)
 					   .param("build", build)
 					   .param("testPlan", testPlan)
 					   .param("time", time)
-				.expect().header("Status", "200")
+				//.expect().header("Status", "200")
 				.when()
 				.post("http://"+ ipServer +"/orquestador/AutomationExecutionInfoListener.html");				
 			}
