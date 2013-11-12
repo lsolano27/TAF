@@ -1,9 +1,10 @@
 package org.Listener;
 
+import static com.jayway.restassured.RestAssured.given;
+
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
-import static com.jayway.restassured.RestAssured.given;
 
 public class ITSListener implements ITestListener{		
 	private String ipServer;
@@ -11,39 +12,65 @@ public class ITSListener implements ITestListener{
 	private String testPlan;
 	private String testID;	
 	private String status;
-	private double time;
+	private double time = 0;
 	
+	/**
+	 * This method call another method to get the duration of the TC and its Status
+	 * when TC Fail
+	 */
 	@Override
 	public void onTestFailure(ITestResult testResult) {
 		getTimeAndStatus(testResult);
 	}
 
+	/**
+	 * This method call another method to get the duration of the TC and its Status
+	 *  when TC skip
+	 */
 	@Override
 	public void onTestSkipped(ITestResult testResult) {
 		getTimeAndStatus(testResult);
 	}
 
+	/**
+	 * This method call another method to get the duration of the TC and its Status
+	 * when TC Success
+	 */
 	@Override
 	public void onTestSuccess(ITestResult testResult) {
 		getTimeAndStatus(testResult);
 	}
 
+	/**
+	 * This method call another method to get information of the TC
+	 */
 	@Override
 	public void onTestStart(ITestResult result) {		
 		getTestCaseInfo(result);
 	}
 
+	/**
+	 * This method call another method to get the duration of the TC and its Status
+	 * when TC fail with percentage of Success
+	 */
 	@Override
 	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-
+		getTimeAndStatus(result);
 	}
 
+	/**
+	 * This method is executed as soon as the TC has finished.
+	 * Call methods to print information and send it to the "orquestador"
+	 */
 	@Override
 	public void onFinish(ITestContext context) {
 		printAll();
 		sendToServer();
 	}	
 	
+	/**
+	 * This method get the context parameters from the TestNG.xml executed.
+	 */
 	@Override
 	public void onStart(ITestContext context) {			
 		ipServer = context.getSuite().getParameter("ip");
@@ -56,6 +83,10 @@ public class ITSListener implements ITestListener{
 		status = getTestStatus(result);
 	}	
 	
+	/**
+	 * This method return the state of the TC
+	 * @param result = the result of the TC from TestNG execution
+	 */
 	private String getTestStatus(ITestResult result){
 		switch (result.getStatus()) {
 		case 2:
@@ -73,6 +104,11 @@ public class ITSListener implements ITestListener{
 		}	
 	}
 	
+	/**
+	 * This method gets the own information of the TC
+	 * in this case the testID parameter
+	 * @param result = the result of the TC from TestNG execution
+	 */
 	private void getTestCaseInfo(ITestResult result) {
 		Object[] parameters = result.getParameters();
 		
@@ -81,6 +117,9 @@ public class ITSListener implements ITestListener{
 		}				   		
 	}	
 
+	/**
+	 * This method print all information gotten
+	 */
 	private void printAll(){
 		System.out.println("Server: " + ipServer);
 		System.out.println("Build: " + build);
@@ -91,13 +130,21 @@ public class ITSListener implements ITestListener{
 		System.out.println("http://"+ ipServer +"/orquestador/AutomationExecutionInfoListener.html");
 	}
 	
-	private void sendToServer(){		
-		given().param("tcId", testID)
-				.param("status", status)
-				.param("build", build)
-				.param("testPlan", testPlan)
-				.param("time", time)
-		.when()
-		.post("http://"+ ipServer +"/orquestador/AutomationExecutionInfoListener.html");
+	/**
+	 * This method send the gotten information to the "orquestador".
+	 */
+	private void sendToServer(){
+		if(ipServer != "" ||  ipServer != null){
+			if((testID != "" ||  testID != null) && (status != "" ||  status != null) && (build != "" ||  build != null) && (testPlan != "" ||  testPlan != null) && (time > 0)){			
+				given().param("tcId", testID)
+					   .param("status", status)
+					   .param("build", build)
+					   .param("testPlan", testPlan)
+					   .param("time", time)
+				.expect().header("Status", "200")
+				.when()
+				.post("http://"+ ipServer +"/orquestador/AutomationExecutionInfoListener.html");				
+			}
+		}		
 	}
 }
