@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import jxl.read.biff.BiffException;
 
-import org.Listener.TSListener;
 import org.openqa.selenium.remote.BrowserType;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -14,11 +13,12 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import com.ts.commons.DataSourceXls;
+import com.ts.commons.TestCaseUtil;
 import com.ts.commons.Validator;
 
 
 
-public class TSListener3DataProviderTestCase extends TSListener {
+public class TSListener3DataProviderTestCase extends TestCaseUtil {
 	protected UI uiInstance;
 	ExampleBasePage currentPage;
 	
@@ -38,8 +38,8 @@ public class TSListener3DataProviderTestCase extends TSListener {
 	}
 
 	@Test(dataProvider = "data")
-	@Parameters("tcId")
-	public void test(@Optional String testID, String name, String lastName, String ID, String address) {
+	@Parameters(value="tcId")
+	public void test(@Optional("ff") String tcId, String name, String lastName, String ID, String address) {
 		using(
 				currentPage = uiInstance.getHomePage()
 										.aCcontactUS()

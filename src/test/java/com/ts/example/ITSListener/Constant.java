@@ -1,7 +1,5 @@
 package com.ts.example.ITSListener;
 
-
-
 public class Constant {	
 	UI iuInstance;
 	private String url = "http://www.testingsoft.com/";

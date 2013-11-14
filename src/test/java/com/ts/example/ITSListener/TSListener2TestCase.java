@@ -1,16 +1,17 @@
 package com.ts.example.ITSListener;
 
-import org.Listener.TSListener;
 import org.openqa.selenium.remote.BrowserType;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+
+import com.ts.commons.TestCaseUtil;
 import com.ts.commons.Validator;
 
 
 
-public class TSListener2TestCase extends TSListener {
+public class TSListener2TestCase extends TestCaseUtil {
 	protected UI uiInstance;
 	ExampleBasePage currentPage;
 	

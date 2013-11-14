@@ -1,6 +1,5 @@
 package com.ts.example.ITSListener;
 
-import org.Listener.TSListener;
 import org.openqa.selenium.remote.BrowserType;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -8,11 +7,12 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
+import com.ts.commons.TestCaseUtil;
 import com.ts.commons.Validator;
 
 
 
-public class TSListener1TestCase extends TSListener{
+public class TSListener1TestCase extends TestCaseUtil{
 	protected UI uiInstance;
 	ExampleBasePage currentPage;
 	
@@ -22,7 +22,7 @@ public class TSListener1TestCase extends TSListener{
 	}
 
 	@Test
-	@Parameters("tcId")
+	@Parameters(value="tcId")
 	public void test(@Optional("MyID_#1") String id) {
 		using(
 				currentPage = uiInstance.getHomePage()
@@ -42,5 +42,5 @@ public class TSListener1TestCase extends TSListener{
 	@AfterTest
 	public void afterMethod(){
 		uiInstance.getDriver().quit();
-	}
+	}	
 }

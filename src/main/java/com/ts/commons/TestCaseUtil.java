@@ -1,10 +1,10 @@
 package com.ts.commons;
 
+import org.Listener.ITSListener;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.Listeners;
 
-
-
-
+@Listeners({ITSListener.class})
 public abstract class TestCaseUtil  implements Component{
 	
 	private Component component;

@@ -81,7 +81,7 @@ public class ITSListener implements ITestListener{
 	private void getTimeAndStatus(ITestResult result) {
 		time =  (result.getEndMillis() - result.getStartMillis()) / 1000;
 		status = getTestStatus(result);
-		printAll();
+		//printAll();
 		sendToServer();
 	}	
 	
@@ -122,15 +122,15 @@ public class ITSListener implements ITestListener{
 	/**
 	 * This method print all information gotten
 	 */
-	private void printAll(){
+	/*private void printAll(){
 		System.out.println("Server: " + ipServer);
 		System.out.println("Build: " + build);
 		System.out.println("TestPlan: " + testPlan);
 		System.out.println("TestID: " + testID);
 		System.out.println("Status: " + status);		
 		System.out.println("Time: " + time);
-		System.out.println("http://"+ ipServer +"/orquestador/AutomationExecutionInfoListener.html");
-	}
+		System.out.println("http://"+ ipServer +"/server/AutomationExecutionInfoListener.html");
+	}*/
 	
 	/**
 	 * This method send the gotten information to the "orquestador".
@@ -145,7 +145,7 @@ public class ITSListener implements ITestListener{
 					   .param("time", time)
 				//.expect().header("Status", "200")
 				.when()
-				.post("http://"+ ipServer +"/orquestador/AutomationExecutionInfoListener.html");				
+				.post("http://"+ ipServer +"/server/AutomationExecutionInfoListener.html");				
 			}
 		}		
 	}
