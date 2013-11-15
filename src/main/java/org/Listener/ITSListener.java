@@ -114,7 +114,7 @@ public class ITSListener implements ITestListener{
 	private void getTestCaseInfo(ITestResult result) {
 		Object[] parameters = result.getParameters();
 		
-		if(parameters != null){
+		if(parameters != null && parameters.length > 0){
 			testID = parameters[0].toString();
 		}				   		
 	}	
