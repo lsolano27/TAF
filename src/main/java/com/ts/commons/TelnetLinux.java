@@ -10,5 +10,15 @@ public class TelnetLinux extends Telnet{
 		super.os = OperatingSystem.LINUX_OS;
 		return this;
 	}
+	
+	@Override
+	public boolean isDisableVT100() {
+		return super.isDisableVT100();
+	}
+
+	@Override
+	public void setDisableVT100(boolean disableVT100) {
+		super.setDisableVT100(disableVT100);
+	}
 
 }

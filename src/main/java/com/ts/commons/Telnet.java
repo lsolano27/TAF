@@ -31,6 +31,7 @@ public abstract class Telnet implements Component {
 	private StringBuilder buff = new StringBuilder();
 	private final String RETURN_ALL = "ALL";
 	public static OperatingSystem os;
+	private boolean disableVT100;
 	
 
 	public Telnet and() {
@@ -67,6 +68,14 @@ public abstract class Telnet implements Component {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+		
+	public boolean isDisableVT100() {
+		return disableVT100;
+	}
+
+	public void setDisableVT100(boolean disableVT100) {
+		this.disableVT100 = disableVT100;
 	}
 
 	/**
@@ -184,12 +193,14 @@ public abstract class Telnet implements Component {
 		
 	}
 	
-	private String filterJunk(String tmp) throws IOException{
-		@SuppressWarnings("resource")
-		VT100InputStream v = new VT100InputStream(new ByteArrayInputStream(tmp.getBytes()));
-		v.run();
-		
-		tmp = v.getResult();
+	private String filterJunk(String tmp) throws IOException{		
+		if(disableVT100 == false){
+			@SuppressWarnings("resource")
+			VT100InputStream v = new VT100InputStream(new ByteArrayInputStream(tmp.getBytes()));
+			v.run();
+			
+			tmp = v.getResult();
+		}
 		return tmp;
 	}
 
