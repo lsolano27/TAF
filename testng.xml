@@ -3,21 +3,6 @@
 <suite name="Suite" parallel="none">
   <test name="Test">
     <classes>
-      <class name="com.ts.example.PageGenerator.TestCase"/>
-      <class name="com.ts.example.IEDriver.TestCase"/>
-      <class name="com.jssc.TestTelnet"/>
-      <class name="com.ts.example.Rest.TestCase"/>
-      <class name="com.nemo.javaexpect.shell.DefaultCommandResultTest"/>
-      <class name="com.jssc.TestSerial"/>
-      <class name="com.ts.example.email.TestCase"/>
-      <class name="com.ts.example.ChromeDriver.TestCase"/>
-      <class name="com.ts.example.dataSource.DataSouceContactUs"/>
-      <class name="com.ts.example.Shell.TestCase"/>
-      <class name="com.ts.example.videoRecorder.DataSouceContactUsRecorded"/>
-      <class name=".SeleniumExample2"/>
-      <class name=".ShellExample"/>
-      <class name=".CalBCR"/>
-      <class name=".SeleniumExample"/>
     </classes>
   </test> <!-- Test -->
 </suite> <!-- Suite -->
