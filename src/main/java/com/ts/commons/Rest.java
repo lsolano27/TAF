@@ -20,7 +20,8 @@ import com.jayway.restassured.specification.RequestSpecification;
 public abstract class Rest implements Component{
 	
 	private RequestSpecification requestSpecification;
-	private String response;
+	private String responseAsString;
+	private Response response;
 	private Headers headers;
 	
 	public Rest()
@@ -184,40 +185,40 @@ public abstract class Rest implements Component{
 	
 	public Rest get(String url)
 	{
-		Response response = requestSpecification.when().get(url); 
-		setResponse(response.asString());
+		response = requestSpecification.when().get(url); 
+		responseAsString = response.asString();
 		setHeaders(response.headers());
 		return this;
 	}
 	
 	public Rest post(String url)
 	{
-		Response response = requestSpecification.when().post(url); 
-		setResponse(response.asString());
+		response = requestSpecification.when().post(url); 
+		responseAsString = response.asString();
 		setHeaders(response.headers());
 		return this;
 	}
 	
 	public Rest put(String url)
 	{
-		Response response = requestSpecification.when().put(url); 
-		setResponse(response.asString());
+		response = requestSpecification.when().put(url); 
+		responseAsString = response.asString();
 		setHeaders(response.headers());
 		return this;
 	}
 	
 	public Rest delete(String url)
 	{
-		Response response = requestSpecification.when().delete(url); 
-		setResponse(response.asString());
+		response = requestSpecification.when().delete(url); 
+		responseAsString = response.asString();
 		setHeaders(response.headers());
 		return this;
 	}
 	
 	public Rest head(String url, Map<String, ?> pathParams)
 	{
-		Response response = requestSpecification.when().head(url, pathParams); 
-		setResponse(response.asString());
+		response = requestSpecification.when().head(url, pathParams); 
+		responseAsString = response.asString();
 		setHeaders(response.headers());
 		return this;
 	}
@@ -225,24 +226,24 @@ public abstract class Rest implements Component{
 	
 	public Rest head(String url, Object pathParams)
 	{
-		Response response = requestSpecification.when().head(url, pathParams); 
-		setResponse(response.asString());
+		response = requestSpecification.when().head(url, pathParams); 
+		responseAsString = response.asString();
 		setHeaders(response.headers());
 		return this;
 	}
 	
 	public Rest patch(String url, Object pathParams)
 	{
-		Response response = requestSpecification.when().patch(url, pathParams); 
-		setResponse(response.asString());
+		response = requestSpecification.when().patch(url, pathParams); 
+		responseAsString = response.asString();
 		setHeaders(response.headers());
 		return this;
 	}
 	
 	public Rest options(String url, Object pathParams)
 	{
-		Response response = requestSpecification.when().options(url, pathParams); 
-		setResponse(response.asString());
+		response = requestSpecification.when().options(url, pathParams); 
+		responseAsString = response.asString();
 		setHeaders(response.headers());
 		return this;
 	}
@@ -300,14 +301,13 @@ public abstract class Rest implements Component{
 		this.requestSpecification = requestSpecification;
 	}
 
-	public String getResponse() {
+	public Response getResponse() {
 		return response;
 	}
 
-	public void setResponse(String response) {
-		this.response = response;
+	public String getResponseAsString() {
+		return responseAsString;
 	}
-
 
 	public Headers getHeaders() {
 		return headers;
