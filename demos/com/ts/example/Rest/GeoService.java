@@ -22,7 +22,7 @@ public class GeoService extends Rest{
 		return new Validator() {
 			@Override
 			public void Validate() {
-				JsonPath jsonPath = new JsonPath(getResponse());
+				JsonPath jsonPath = new JsonPath(getResponse().toString());
 				String cuidad = jsonPath.getString("geoplugin_regionName");
 				Assert.assertEquals(cuidad, "Cartago");
 				
@@ -35,7 +35,7 @@ public class GeoService extends Rest{
 		new Validator() {
 			@Override
 			public void Validate() {
-				JsonPath jsonPath = new JsonPath(getResponse());
+				JsonPath jsonPath = new JsonPath(getResponse().toString());
 				String cuidad = jsonPath.getString("geoplugin_countryName");
 				
 				Assert.assertEquals(cuidad, "Costa Rica");
