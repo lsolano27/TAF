@@ -35,7 +35,7 @@ public class RecordExt extends ScreenRecorder{
 	private static Format audioFormat = null;
 	
 	public RecordExt(String fileName) throws IOException, AWTException {
-		super(gc, captureArea, fileFormat, screenFormat, mouseFormat, audioFormat, new File(getProjectURL() + "/videos"));
+		super(gc, captureArea, fileFormat, screenFormat, mouseFormat, audioFormat, new File("videos"));
 		this.fileName = fileName;
 	}		
 	
@@ -47,11 +47,5 @@ public class RecordExt extends ScreenRecorder{
 			 throw new IOException("\"" + movieFolder + "\" is not a directory.");
 		 }	
 		 return new File(movieFolder, fileName + "." + Registry.getInstance().getExtension(fileFormat));
-	}
-	
-	private static String getProjectURL(){
-		String projectRootPath = RecordExt.class.getResource("").getPath();
-		int reference = projectRootPath.lastIndexOf("/target");		
-		return projectRootPath.substring(0, reference);
 	}
 }
