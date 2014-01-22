@@ -89,49 +89,11 @@ public abstract class Mail implements Component {
 	        return store;
 		}
 
-		private IMAPFolder getIMAPFolder(String Location_) throws MessagingException
+		public IMAPFolder getIMAPFolder(String Location_) throws MessagingException
 		{
 			IMAPFolder folder = (IMAPFolder) getStoreFromProtocol().getFolder(Location_); 
 	        
 	        return folder;
-		}
-		
-		public Message searchMessage(String subject,String Location_,Date DateSearch_) throws MessagingException{
-			Message[] messages= null;
-			
-			IMAPFolder folder = getIMAPFolder(Location_); 
-			folder.open(Folder.READ_WRITE);
-
-       	
-            SearchTerm st = new ReceivedDateTerm(ComparisonTerm.EQ, DateSearch_);
-            SearchTerm st2 = new AndTerm(new SubjectTerm(subject), st); 
-
-			messages = searchMessage(st2, Location_);
-			
-			boolean thereIsNoEmails = messages == null || messages.length == 0;
-			
-			if(thereIsNoEmails)
-			{
-				throw new RuntimeException("There is no email with this subject \""+subject+"\" and date "+DateSearch_.toString()+".");
-			}
-			
-			boolean thereAreMoreEmailsWithTheSameSubject = messages.length > 1;
-			if(thereAreMoreEmailsWithTheSameSubject)
-			{
-				Calendar calendar = Calendar.getInstance(); 
-				calendar.setTime(DateSearch_);   
-				int minute = calendar.get(Calendar.MINUTE); 
-				int hour = calendar.get(Calendar.HOUR);  
-				int second = calendar.get(Calendar.SECOND); 
-				
-				if(minute != 0 || hour != 0 || second != 0)
-				{
-					throw new RuntimeException("Imap SearchTerms is not able to use hours, minutes or seconds to filter messages. And there are more than 1 email with \""+subject+"\" as subject date "+DateSearch_.toString()+".");
-				}
-				throw new RuntimeException("More than one email has the same subject \""+subject+"\".");
-			}
-	        	        	        
-			return messages[0];
 		}
 		
 		public Message[] searchMessage(SearchTerm searchTerm, String Location_) throws MessagingException{
