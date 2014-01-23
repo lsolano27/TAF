@@ -1,14 +1,15 @@
 package com.ts.commons;
 
 import org.Listener.ITSListener;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Listeners;
 
 @Listeners({ITSListener.class})
-public abstract class TestCaseUtil  implements Component{
+public abstract class TestCaseUtil implements Component{
 	
 	private Component component;
-	public int amountOfusingWithOutCecks = 0;
+	private int amountOfusingWithOutChecks = 0;
 	
 	public TestCaseUtil and()
 	{
@@ -22,7 +23,7 @@ public abstract class TestCaseUtil  implements Component{
 	
 	public TestCaseUtil andUsing(Component component)
 	{
-		this.amountOfusingWithOutCecks ++;
+		this.amountOfusingWithOutChecks ++;
 		this.setComponent(component);
 		return this;
 	}
@@ -35,7 +36,7 @@ public abstract class TestCaseUtil  implements Component{
 	
 	public TestCaseUtil using(Until until)
 	{
-		this.amountOfusingWithOutCecks ++;
+		this.amountOfusingWithOutChecks ++;
 		wait(until);
 		return this;
 	}
@@ -54,37 +55,34 @@ public abstract class TestCaseUtil  implements Component{
 			if(time < 0)
 			{
 				throw new RuntimeException("The Until condition never achieves the expected  result.");
-			}
-				
-			
+			}			
 		}
 	}
 
 	public TestCaseUtil using(Component component)
 	{
-		this.amountOfusingWithOutCecks ++;
+		this.amountOfusingWithOutChecks ++;
 		this.setComponent(component);
 		return this;
 	}
 	public TestCaseUtil check (Validator validator)
 	{
-		this.amountOfusingWithOutCecks --;
+		this.amountOfusingWithOutChecks --;
 		validator.Validate();
 		return this;
-
 	}
 	
 	public TestCaseUtil andFinally (Validator validator)
 	{
-		this.amountOfusingWithOutCecks --;
+		this.amountOfusingWithOutChecks --;
 		validator.Validate();
 		return this;
 	}
 	
 	@AfterClass
-	public void validateTestStandar()
-	{
-		if(amountOfusingWithOutCecks != 0)
+	public void validateTestStandar(ITestResult result)
+	{		
+		if((amountOfusingWithOutChecks != 0) && (result.getStatus() != 2))
 		{
 			throw new RuntimeException("You have an Using without its corresponding check or andFinally");
 		}
@@ -96,10 +94,5 @@ public abstract class TestCaseUtil  implements Component{
 
 	public void setComponent(Component component) {
 		this.component = component;
-	}
-	
-	
-
-	
-	
+	}	
 }
