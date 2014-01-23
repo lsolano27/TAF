@@ -79,10 +79,18 @@ public abstract class TestCaseUtil implements Component{
 		return this;
 	}
 	
-	@AfterClass
+	/*@AfterClass
 	public void validateTestStandar(ITestResult result)
 	{		
 		if((amountOfusingWithOutChecks != 0) && (result.getStatus() != 2))
+		{
+			throw new RuntimeException("You have an Using without its corresponding check or andFinally");
+		}
+	}*/
+	
+	public void validateTestStandar()
+	{		
+		if(amountOfusingWithOutChecks != 0)
 		{
 			throw new RuntimeException("You have an Using without its corresponding check or andFinally");
 		}
