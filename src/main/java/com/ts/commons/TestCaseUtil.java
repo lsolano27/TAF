@@ -3,6 +3,7 @@ package com.ts.commons;
 import org.Listener.ITSListener;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Listeners;
 
 @Listeners({ITSListener.class})
@@ -79,22 +80,22 @@ public abstract class TestCaseUtil implements Component{
 		return this;
 	}
 	
-	/*@AfterClass
+	@AfterMethod
 	public void validateTestStandar(ITestResult result)
 	{		
 		if((amountOfusingWithOutChecks != 0) && (result.getStatus() != 2))
 		{
 			throw new RuntimeException("You have an Using without its corresponding check or andFinally");
 		}
-	}*/
+	}
 	
-	public void validateTestStandar()
+	/*public void validateTestStandar()
 	{		
 		if(amountOfusingWithOutChecks != 0)
 		{
 			throw new RuntimeException("You have an Using without its corresponding check or andFinally");
 		}
-	}
+	}*/
 
 	public Component getComponent() {
 		return component;
