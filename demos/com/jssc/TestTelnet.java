@@ -18,11 +18,9 @@ public class TestTelnet{
 		telnet.open();
 	//	telnet.execute("iwlist " + wifiInterface + " scan | grep " + wirelessName, "(SSID:" + '"' + wirelessName + '"'+ ")");
 		
-		telnet.execute("netsh wlan show networks | find " + '"' + wirelessName  + '"', "(SSID\\s[0-9]+\\s:\\s" + wirelessName + ")");
+		telnet.execute("ping 10.0.0.1", 10);
 		//telnet.execute("netsh interface set interface \"Local Area Connection\" disable");
 		System.out.println(telnet.getCommandResult());
-		telnet.close();
-	
-		
+		telnet.close();		
 	}
 }

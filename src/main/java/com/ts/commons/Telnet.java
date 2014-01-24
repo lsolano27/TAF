@@ -13,7 +13,7 @@ import org.apache.commons.net.telnet.TelnetClient;
 import com.nemo.javaexpect.shell.CommandResult;
 import com.nemo.javaexpect.shell.DefaultCommandResult;
 import com.nemo.javaexpect.shell.exception.CommandTimeoutException;
-import com.nemo.javaexpect.term.VT100InputStream;
+import com.nemo.javaexpect.term.CleanResultTelnet;
 
 
 public abstract class Telnet implements Component {
@@ -69,7 +69,7 @@ public abstract class Telnet implements Component {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-		
+
 	public boolean isDisableVT100() {
 		return disableVT100;
 	}
@@ -125,11 +125,11 @@ public abstract class Telnet implements Component {
 
 			Thread.sleep(waitTime); // wait for responding from reader
 			// Log the user on
-			if (readUntil("(([L]|[l])ogin:)", 10) == null)
+			if (readUntil("(([L]|[l])ogin:)", TsDriver.IMPLICT_TIME) == null)
 				return false;
 			write(userName);
 			Thread.sleep(waitTime); // wait for responding from reader
-			if (readUntil("(([P]|[p])assword:)", 10) == null)
+			if (readUntil("(([P]|[p])assword:)", TsDriver.IMPLICT_TIME) == null)
 				return false;
 			write(password);
 			Thread.sleep(waitTime); // wait for responding from reader
@@ -193,21 +193,26 @@ public abstract class Telnet implements Component {
 		
 	}
 	
+	@SuppressWarnings("resource")
 	private String filterJunk(String tmp) throws IOException{		
-		if(disableVT100 == false){
-			@SuppressWarnings("resource")
-			VT100InputStream v = new VT100InputStream(new ByteArrayInputStream(tmp.getBytes()));
-			v.run();
-			
-			tmp = v.getResult();
+		
+		if(isDisableVT100() == false){		
+			CleanResultTelnet cleanResult = new CleanResultTelnet(new ByteArrayInputStream(tmp.getBytes()));
+			cleanResult.run();
+			tmp = cleanResult.getResult();			
 		}
 		return tmp;
 	}
 
 	private void write(String value) {
 		try {
-			output.println(value);
+			
+			output.print(value);
+
+			output.print("\r\n");
+
 			output.flush();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -218,7 +223,19 @@ public abstract class Telnet implements Component {
 		//	lastCommand = "execute\"(" + command + "\")";
 			write(command);
 			Thread.sleep(waitTime); // wait for responding from reader
-			setCommandResult(readUntil(RETURN_ALL, 10).getCommandResult());
+			setCommandResult(readUntil(RETURN_ALL, TsDriver.IMPLICT_TIME).getCommandResult());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return this;
+	}
+	
+	public Telnet execute(String command, int timeOut) {
+		try {
+		//	lastCommand = "execute\"(" + command + "\")";
+			write(command);
+			Thread.sleep(waitTime); // wait for responding from reader
+			setCommandResult(readUntil(RETURN_ALL, timeOut).getCommandResult());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -230,8 +247,19 @@ public abstract class Telnet implements Component {
 		//	lastCommand = "execute\"(" + command + "\",\"" + command + "\")";
 			write(command);
 			Thread.sleep(waitTime); // wait for responding from reader
-			setCommandResult(readUntil(expect, 20).getCommandResult());
-					//setCommandResult(readUntil(expect));
+			setCommandResult(readUntil(expect, TsDriver.IMPLICT_TIME).getCommandResult());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return this;
+	}
+	
+	public Telnet execute(String command, String expect, int timeOut) {
+		try {
+		//	lastCommand = "execute\"(" + command + "\",\"" + command + "\")";
+			write(command);
+			Thread.sleep(waitTime); // wait for responding from reader
+			setCommandResult(readUntil(expect, timeOut).getCommandResult());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

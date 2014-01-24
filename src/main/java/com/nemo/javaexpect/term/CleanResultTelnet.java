@@ -17,7 +17,7 @@ import com.ts.commons.Telnet;
  * @author Canhua Li
  *
  */
-public class VT100InputStream extends FilterInputStream implements Runnable{
+public class CleanResultTelnet extends FilterInputStream{
 	static final String ESC_pattern = "[ -/]*([0-Z\\-~]|\\[[ -/]*[0-?]*[@-~])";
 	private PipedOutputStream outputStream;
 	private PipedInputStream inputStream;
@@ -40,7 +40,7 @@ public class VT100InputStream extends FilterInputStream implements Runnable{
 			throw new ConnectionException("Failed to create connect the PipedInput and PipedOutput Stream\n" + e1.getMessage());
 		}	
 	}
-	public VT100InputStream(InputStream in) {
+	public CleanResultTelnet(InputStream in) {
 		super(new PushbackInputStream(in));
 		result = new StringBuilder();
 		createPipeInputOutputStream();
