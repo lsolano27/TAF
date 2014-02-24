@@ -8,13 +8,14 @@ import com.ts.commons.maven.MavenConfiguration;
 
 
 public class FirefoxDriver extends org.openqa.selenium.firefox.FirefoxDriver implements TsDriver{
+	static FirefoxProfile customProfile = new TSFireFoxProfile().getProfile();
 	
 	public FirefoxDriver()
-	{
-		super();
+	{		
+		super(customProfile);
 		afterSetUp();
-	
 	}
+	
 	public FirefoxDriver(FirefoxProfile profile)
 	{
 		super(profile);
@@ -53,45 +54,42 @@ public class FirefoxDriver extends org.openqa.selenium.firefox.FirefoxDriver imp
 				else if((seleniumVersion <2 || seleniumRelease < 34) && currentVersion == 23 )
 				{
 					throw new RuntimeException("FiroFox's version 23 needs at least selenium-java 2.34.0.");
-				}
-					
-				
+				}				
 			}
 		};
 		ffValidations.Validate();
 	}
 	
-	 public void get(String domine, String user, String pass)
+	public void get(String domine, String user, String pass)
      {
 		 get("https://"+user+":"+pass+"@"+domine);       
      }
-
 	 
-	 public void moveToElement(WebElement element)
+	public void moveToElement(WebElement element)
 	 {
 		 Actions builder = new Actions(this); 
 		 builder.moveToElement(element).build().perform();
 	 }
 
-	 public void doubleClick(WebElement element)
+	public void doubleClick(WebElement element)
 	 {
 		 Actions builder = new Actions(this); 
 		 builder.doubleClick(element).build().perform();
 	 }
 	 
-	 public void clickAndHold(WebElement element)
+	public void clickAndHold(WebElement element)
 	 {
 		 Actions builder = new Actions(this); 
 		 builder.clickAndHold(element).build().perform();
 	 }
 	  
-	 public void dragAndDrop(WebElement source, WebElement target)
+	public void dragAndDrop(WebElement source, WebElement target)
 	 {
 		 Actions builder = new Actions(this); 
 		 builder.dragAndDrop(source, target).build().perform();
 	 }
 
-	 public void waitToElementBeVisible(final WebElement... element)
+	public void waitToElementBeVisible(final WebElement... element)
 	 {
 		TestCaseUtil.wait(new Until() {
 			
@@ -110,7 +108,7 @@ public class FirefoxDriver extends org.openqa.selenium.firefox.FirefoxDriver imp
 		});
 	 }
 	 
-	 public void waitToElementBeEnabled(final WebElement... element)
+	public void waitToElementBeEnabled(final WebElement... element)
 	 {
 		 TestCaseUtil.wait(new Until() {
 			@Override
@@ -128,7 +126,7 @@ public class FirefoxDriver extends org.openqa.selenium.firefox.FirefoxDriver imp
 		});
 	 }
 	 
-	 public void waitToElementBeSelected(final WebElement... element)
+	public void waitToElementBeSelected(final WebElement... element)
 	 {
 		 TestCaseUtil.wait(new Until() {
 			@Override
@@ -146,7 +144,7 @@ public class FirefoxDriver extends org.openqa.selenium.firefox.FirefoxDriver imp
 		});
 	 }
 	 
-	 public String getBrowserVersion()
+	public String getBrowserVersion()
 	 {
 		 return this.getCapabilities().getVersion();
 	 }	 
