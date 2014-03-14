@@ -2,7 +2,6 @@ package com.ts.commons;
 
 import org.Listener.ITSListener;
 import org.testng.ITestResult;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Listeners;
 
@@ -49,7 +48,7 @@ public abstract class TestCaseUtil implements Component{
 		
 		while( expectedCondition )
 		{
-					expectedCondition = !until.execute();
+			expectedCondition = !until.execute();
 			long endTime = System.currentTimeMillis();
 			long time = endTime - startTime;
 			time = (FirefoxDriver.IMPLICT_TIME_UNIT.toMillis(FirefoxDriver.IMPLICT_TIME)) -  time;

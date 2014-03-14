@@ -2,6 +2,7 @@ package com.ts.commons;
 
 public class TelnetLinux extends Telnet{
 
+	@SuppressWarnings("static-access")
 	@Override
 	public Telnet connection(String host, String userName, String password) {
 		super.setHost(host);

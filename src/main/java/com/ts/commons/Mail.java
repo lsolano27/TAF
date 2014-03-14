@@ -1,8 +1,6 @@
 package com.ts.commons;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -18,11 +16,7 @@ import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.mail.search.AndTerm;
-import javax.mail.search.ComparisonTerm;
-import javax.mail.search.ReceivedDateTerm;
 import javax.mail.search.SearchTerm;
-import javax.mail.search.SubjectTerm;
 
 import com.sun.mail.imap.IMAPFolder;
 
@@ -132,6 +126,7 @@ public abstract class Mail implements Component {
 			return content;
 		}
 		
+		@SuppressWarnings("rawtypes")
 		public Enumeration getAllHeaders(Message msg) throws MessagingException 
 		{
 			Enumeration content = msg.getAllHeaders();

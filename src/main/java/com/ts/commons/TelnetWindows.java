@@ -2,6 +2,7 @@ package com.ts.commons;
 
 public class TelnetWindows extends Telnet {
 
+	@SuppressWarnings("static-access")
 	@Override
 	public Telnet connection(String host, String userName, String password) {
 		

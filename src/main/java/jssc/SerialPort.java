@@ -41,7 +41,8 @@ public class SerialPort {
     private boolean eventListenerAdded = false;
 
     //since 2.2.0 ->
-    private Method methodErrorOccurred = null;
+    @SuppressWarnings("unused")
+	private Method methodErrorOccurred = null;
     //<- since 2.2.0
     
     public static final int BAUDRATE_110 = 110;

@@ -14,6 +14,14 @@ public class ITSListener implements ITestListener{
 	private String status;
 	private double time = 0;
 	
+	public String getStatus() {
+		return status;
+	}
+
+	public double getTime() {
+		return time;
+	}
+
 	/**
 	 * This method call another method to get the duration of the TC and its Status
 	 * when TC Fail
@@ -81,7 +89,6 @@ public class ITSListener implements ITestListener{
 	private void getTimeAndStatus(ITestResult result) {
 		time =  (result.getEndMillis() - result.getStartMillis()) / 1000;
 		status = getTestStatus(result);
-		//printAll();
 		sendToServer();
 	}	
 	
@@ -113,25 +120,12 @@ public class ITSListener implements ITestListener{
 	 */
 	private void getTestCaseInfo(ITestResult result) {
 		Object[] parameters = result.getParameters();
-		
+	
 		if(parameters != null && parameters.length > 0){
 			testID = parameters[0].toString();
-		}				   		
+		}
 	}	
 
-	/**
-	 * This method print all information gotten
-	 */
-	/*private void printAll(){
-		System.out.println("Server: " + ipServer);
-		System.out.println("Build: " + build);
-		System.out.println("TestPlan: " + testPlan);
-		System.out.println("TestID: " + testID);
-		System.out.println("Status: " + status);		
-		System.out.println("Time: " + time);
-		System.out.println("http://"+ ipServer +"/server/AutomationExecutionInfoListener.html");
-	}*/
-	
 	/**
 	 * This method send the gotten information to the "orquestador".
 	 */
@@ -143,7 +137,6 @@ public class ITSListener implements ITestListener{
 					   .param("build", build)
 					   .param("testPlan", testPlan)
 					   .param("time", time)
-				//.expect().header("Status", "200")
 				.when()
 				.post("http://"+ ipServer +"/server/AutomationExecutionInfoListener.html");				
 			}
