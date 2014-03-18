@@ -22,8 +22,6 @@ import org.testng.annotations.Optional;
 import com.ts.commons.TSRetry;
 import com.ts.commons.TestCaseUtil;
 import com.ts.commons.TSRunReportXls.ExcelReport;
-import com.ts.example.ITSListener.TestCases.test2TSListener;
-import com.ts.example.ITSListener.TestCases.test2TSListener2;
 
 @SuppressWarnings("unused")
 public class ITSListener implements ITestListener, ITestNGListener{
@@ -206,12 +204,12 @@ public class ITSListener implements ITestListener, ITestNGListener{
 						.addRow(tcName, tcStatus, String.valueOf(new Date()), time, description);
 	}
 	
-	private WebDriver getDriver(ITestResult result) {
+	/*private WebDriver getDriver(ITestResult result) {
 		//TODO jalar el driver q esta en uso de forma implicita
 		Object currentClass = result.getInstance();
 		WebDriver driver = ((test2TSListener) currentClass).uiInstance.getDriver();
         return driver;
-	}	
+	}	*/
 	
 	private String getDate(String dateFormat) {
 		return new SimpleDateFormat(dateFormat).format(Calendar.getInstance().getTime());
