@@ -2,11 +2,31 @@ package org.Listener;
 
 import static com.jayway.restassured.RestAssured.given;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
+import org.testng.ITestNGListener;
+import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.annotations.Optional;
 
-public class ITSListener implements ITestListener{		
+import com.ts.commons.TSRetry;
+import com.ts.commons.TestCaseUtil;
+import com.ts.commons.TSRunReportXls.ExcelReport;
+import com.ts.example.ITSListener.TestCases.test2TSListener;
+import com.ts.example.ITSListener.TestCases.test2TSListener2;
+
+@SuppressWarnings("unused")
+public class ITSListener implements ITestListener, ITestNGListener{
 	private String ipServer;
 	private String build;
 	private String testPlan;
@@ -23,30 +43,64 @@ public class ITSListener implements ITestListener{
 	}
 
 	/**
-	 * This method call another method to get the duration of the TC and its Status
-	 * when TC Fail
+	 * This method call another method to get the duration of the TC and its Status when TC Fail
 	 */
 	@Override
 	public void onTestFailure(ITestResult testResult) {
 		getTimeAndStatus(testResult);
+		
+		try {
+			String description = "", path = "", methodName = testResult.getName();
+			String datePath = getDate("dd_MM_yyyy");
+			/*File scrFile = ((TakesScreenshot) getDriver(testResult)).getScreenshotAs(OutputType.FILE);
+			path = (String) "Report/"+datePath+"/failure_screenshots/"+methodName+"_"+ getDate("dd_MM_yyyy_hh_mm_ss")+".png";
+			FileUtils.copyFile(scrFile, new File(path));*/
+			if( ! path.equals("")){
+				description = "Screenshot available in "+path;
+			}			
+			
+			reportGenerator(methodName, status, String.valueOf(time), description, datePath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
-	 * This method call another method to get the duration of the TC and its Status
-	 *  when TC skip
+	 * This method call another method to get the duration of the TC and its Status when TC skip
 	 */
 	@Override
 	public void onTestSkipped(ITestResult testResult) {
 		getTimeAndStatus(testResult);
+		
+		try {
+			String methodName = testResult.getName();
+			
+			if(testResult.getParameters().length != 0)
+			{
+				methodName+=":"+testResult.getParameters()[0].toString();
+			}				
+			
+			reportGenerator("N/A", status, methodName, "", getDate("dd_MM_yyyy"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
-	 * This method call another method to get the duration of the TC and its Status
-	 * when TC Success
+	 * This method call another method to get the duration of the TC and its Status when TC Success
 	 */
 	@Override
 	public void onTestSuccess(ITestResult testResult) {
 		getTimeAndStatus(testResult);
+		
+		try {
+			String methodName = testResult.getName();			
+			reportGenerator(methodName, status, String.valueOf(time), "", getDate("dd_MM_yyyy"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -55,41 +109,44 @@ public class ITSListener implements ITestListener{
 	@Override
 	public void onTestStart(ITestResult result) {		
 		getTestCaseInfo(result);
-	}
+	}	
 
 	/**
-	 * This method call another method to get the duration of the TC and its Status
-	 * when TC fail with percentage of Success
+	 * This method call another method to get the duration of the TC and its Status when TC fail with percentage of Success
 	 */
 	@Override
 	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
 		getTimeAndStatus(result);
 	}
+	
+	private void setTSRetry(ITestContext context){
+		for (ITestNGMethod method : context.getAllTestMethods()) {
+			method.setRetryAnalyzer(new TSRetry());
+		}
+	}
 
 	@Override
-	public void onFinish(ITestContext context) {
-	
-	}	
+	public void onFinish(ITestContext context) {}
 	
 	/**
 	 * This method get the context parameters from the TestNG.xml executed.
 	 */
 	@Override
-	public void onStart(ITestContext context) {			
+	public void onStart(ITestContext context) {		
+		setTSRetry(context);
 		ipServer = context.getSuite().getParameter("ip");
 		build = context.getSuite().getParameter("build");
 		testPlan = context.getSuite().getParameter("testPlan");
 	}
 	
 	/**
-	 * This method gets the time of the TC, its status,
-	 * print all gotten information and send it.
+	 * This method gets the time of the TC, its status, print all gotten information and send it.
 	 * @param result
 	 */
 	private void getTimeAndStatus(ITestResult result) {
 		time =  (result.getEndMillis() - result.getStartMillis()) / 1000;
 		status = getTestStatus(result);
-		sendToServer();
+		//sendToServer();
 	}	
 	
 	/**
@@ -114,8 +171,7 @@ public class ITSListener implements ITestListener{
 	}
 	
 	/**
-	 * This method gets the own information of the TC
-	 * in this case the testID parameter
+	 * This method gets the own information of the TC in this case the testID parameter
 	 * @param result = the result of the TC from TestNG execution
 	 */
 	private void getTestCaseInfo(ITestResult result) {
@@ -124,7 +180,7 @@ public class ITSListener implements ITestListener{
 		if(parameters != null && parameters.length > 0){
 			testID = parameters[0].toString();
 		}
-	}	
+	}
 
 	/**
 	 * This method send the gotten information to the "orquestador".
@@ -141,5 +197,23 @@ public class ITSListener implements ITestListener{
 				.post("http://"+ ipServer +"/server/AutomationExecutionInfoListener.html");				
 			}
 		}		
+	}
+	
+	private void reportGenerator(String tcName, String tcStatus, String time, @Optional("")String description, String datePath) throws Exception {
+		new ExcelReport("AllTestCasesStatuses" + datePath + ".xls")
+						.inDirectory("Report/"+datePath)
+						.buildReportHeader("TEST CASE", "STATUS", "DATE", "TIME", "DESCRIPTION", "TOTAL", "SUCCESS", "FAILURE", "SKIP")
+						.addRow(tcName, tcStatus, String.valueOf(new Date()), time, description);
+	}
+	
+	private WebDriver getDriver(ITestResult result) {
+		//TODO jalar el driver q esta en uso de forma implicita
+		Object currentClass = result.getInstance();
+		WebDriver driver = ((test2TSListener) currentClass).uiInstance.getDriver();
+        return driver;
+	}	
+	
+	private String getDate(String dateFormat) {
+		return new SimpleDateFormat(dateFormat).format(Calendar.getInstance().getTime());
 	}
 }

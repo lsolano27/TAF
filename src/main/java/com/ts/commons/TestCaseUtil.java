@@ -65,6 +65,7 @@ public abstract class TestCaseUtil implements Component{
 		this.setComponent(component);
 		return this;
 	}
+	
 	public TestCaseUtil check (Validator validator)
 	{
 		this.amountOfusingWithOutChecks --;
@@ -88,14 +89,6 @@ public abstract class TestCaseUtil implements Component{
 		}
 	}
 	
-	/*public void validateTestStandar()
-	{		
-		if(amountOfusingWithOutChecks != 0)
-		{
-			throw new RuntimeException("You have an Using without its corresponding check or andFinally");
-		}
-	}*/
-
 	public Component getComponent() {
 		return component;
 	}

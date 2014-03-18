@@ -24,7 +24,7 @@ public class TS_UI {
 		driver.manage().window().maximize();
 		driver.manage().deleteAllCookies();
 	}
-	
+		
 	public WebDriver getDriver() {
 		return driver;
 	}
