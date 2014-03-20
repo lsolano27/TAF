@@ -1,5 +1,6 @@
 package com.ts.commons.TSRunReportXls;
 
+import java.io.File;
 import java.util.ArrayList;
 
 class XLS {
@@ -10,8 +11,9 @@ class XLS {
 	
 	public XLS(String xlsName){
 		this.setXlsName(xlsName);
-		String diskLocation = this.getClass().getResource("").getPath();
-		int reference = diskLocation.lastIndexOf("/target");
+		File root = new File("src");
+		String diskLocation = root.getAbsolutePath().replace("\\", "/");
+		int reference = diskLocation.lastIndexOf("/src");
 		String[] allSplitedPath = diskLocation.substring(0, reference).split("/");
 		project = "Project Name: " + allSplitedPath[allSplitedPath.length - 1];			
 	}
