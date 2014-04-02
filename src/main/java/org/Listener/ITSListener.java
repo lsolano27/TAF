@@ -2,16 +2,15 @@ package org.Listener;
 
 import static com.jayway.restassured.RestAssured.given;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGListener;
@@ -20,7 +19,6 @@ import org.testng.ITestResult;
 import org.testng.annotations.Optional;
 
 import com.ts.commons.TSRetry;
-import com.ts.commons.TestCaseUtil;
 import com.ts.commons.TSRunReportXls.ExcelReport;
 
 @SuppressWarnings("unused")
@@ -48,21 +46,32 @@ public class ITSListener implements ITestListener, ITestNGListener{
 		getTimeAndStatus(testResult);
 		
 		try {
-			String description = "", path = "", methodName = testResult.getName();
 			String datePath = getDate("dd_MM_yyyy");
-			/*File scrFile = ((TakesScreenshot) getDriver(testResult)).getScreenshotAs(OutputType.FILE);
-			path = (String) "Report/"+datePath+"/failure_screenshots/"+methodName+"_"+ getDate("dd_MM_yyyy_hh_mm_ss")+".png";
-			FileUtils.copyFile(scrFile, new File(path));*/
-			if( ! path.equals("")){
-				description = "Screenshot available in "+path;
-			}			
-			
+			String description = createDescription(testResult, testResult.getName(), datePath), path = "", methodName = testResult.getName();			
 			reportGenerator(methodName, status, String.valueOf(time), description, datePath);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private String createDescription(ITestResult testResult, String methodName, String datePath) throws IOException{
+		String error = testResult.getThrowable().getMessage();
+		String filePath = "N/A";
+		if( ! error.equals("")){
+			File newErrorDir = new File("Report/" + datePath + "/Fails");
+			newErrorDir.mkdirs();
+			File newErrorTxt = new File(newErrorDir.getPath() + "/" + methodName + ".txt");
+			FileWriter w = new FileWriter(newErrorTxt);	
+			BufferedWriter bw = new BufferedWriter(w);
+			PrintWriter wr = new PrintWriter(bw);
+			wr.write(error); 
+			filePath = newErrorTxt.getAbsolutePath();
+			wr.close();
+			bw.close();
+		}
+		return filePath;
 	}
 
 	/**

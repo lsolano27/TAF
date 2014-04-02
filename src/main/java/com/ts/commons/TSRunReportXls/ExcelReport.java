@@ -18,6 +18,7 @@ import jxl.write.Formula;
 import jxl.write.Label;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
+import jxl.write.WritableHyperlink;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
@@ -35,21 +36,20 @@ public class ExcelReport extends XLS{
 		
 		if( ! file.exists()){
 			file.mkdirs();
-		}			
-		
+		}					
 		return this;
 	}	
 	
 	public ExcelReport buildReportHeader(String... colunmNames) throws RowsExceededException, WriteException, IOException{		
-		ArrayList<String> testCaseHeader = new ArrayList<String>();		
+		ArrayList<String> testCaseHeader = new ArrayList<String>();	
+		
 		for (String columName : colunmNames) {
 			testCaseHeader.add(columName);
 		}
 		
 		setColumsHeader(testCaseHeader);
 		createWorkbook();	
-		buildReportCounts();
-		
+		buildReportCounts();		
 		return this;
 	}
 	
@@ -61,19 +61,14 @@ public class ExcelReport extends XLS{
 		
 		try {
 			if(file.exists()){
-				wb = Workbook.getWorkbook(file);
+				wb = Workbook.getWorkbook(file.getAbsoluteFile());
 				workbook = Workbook.createWorkbook(file, wb); 					
 				sheet = workbook.getSheet(0);	
 				
-				//sheet.addCell(new Label(42, 2, "Success="));
 				sheet.addCell(new Formula(6, 2, "COUNTIF(B:C,\"Success\")", summayFormat()));
-				//sheet.addCell(new Label(7, 2, "Failed="));
 				sheet.addCell(new Formula(7, 2, "COUNTIF(B:C,\"FAILURE\")", summayFormat()));
-				//sheet.addCell(new Label(42, 4, "Skipped="));
 				sheet.addCell(new Formula(8, 2, "COUNTIF(B:C,\"Skipped\")", summayFormat()));
-				//sheet.addCell(new Label(42, 5, "Total of Test Cases on this run "));
 				sheet.addCell(new Formula(5, 2, "SUM(G3:I3)", summayFormat()));
-				//sheet.addCell(new Formula(0, 2, "CONCATENATE(AQ6,AR6,\". \",AQ3,AR3,\" \",AQ4,AR4,\" \",AQ5,AR5)"));
 			}else{
 				System.err.println("File does not exist");
 			}	
@@ -99,13 +94,13 @@ public class ExcelReport extends XLS{
 			if(wb != null){
 				wb.close();
 			}
-		}
-			
+		}			
 		return this;
 	}
 	
 	public ExcelReport createWorkbook() throws IOException, RowsExceededException, WriteException{
 		File file = new File(directoryName + "/" + xlsName);
+		
 		if( ! file.exists()){
 			file = new File(file.getPath());
 			createXls(Workbook.createWorkbook(file.getAbsoluteFile()), project, columsHeader);
@@ -113,7 +108,7 @@ public class ExcelReport extends XLS{
 		return this;
 	}
 	
-	public void addRow(String... columns) throws IOException, WriteException{
+	public void addRow(String... columns) throws IOException, WriteException{		 
 		File file = new File(directoryName + "/" + xlsName);
 		WritableWorkbook workbook = null;
 		Workbook wb = null;
@@ -128,20 +123,24 @@ public class ExcelReport extends XLS{
 				Cell celdaCurso = null;
 				String valorCeldaCurso=null;	
 				
-				for (int row = 2; row <= sheet.getRows(); row++) {
+				for (int row = 2; row <= sheet.getRows(); row++) {					
 					celdaCurso= sheet.getCell(0,row);
 					valorCeldaCurso= celdaCurso.getContents();
 					
 					if(columns[0].equals(valorCeldaCurso) || valorCeldaCurso.equals("")){
-						for (int i = 0; i < columns.length; i++) {
+						for (int i = 0; i < columns.length; i++) {							
 							if(columns[1].equals("SUCCESS"))
 								sheet.addCell(new Label(colum + i, row, columns[i], passedFormat()));
 							
 							else if (columns[1].equals("SKIPPED"))
-								sheet.addCell(new Label(colum + i, row, columns[i], skippedFormat()));
-								
+								sheet.addCell(new Label(colum + i, row, columns[i], skippedFormat()));								
 							else
-								sheet.addCell(new Label(colum + i, row, columns[i], failedFormat()));
+								if(i == 4){
+									WritableHyperlink link = new WritableHyperlink(colum + i, row, new File(columns[i]));
+									sheet.addHyperlink(link);
+								}else{
+									sheet.addCell(new Label(colum + i, row, columns[i], failedFormat()));
+								}								
 						}
 						break;							
 					}
