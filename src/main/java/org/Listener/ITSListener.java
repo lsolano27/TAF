@@ -56,7 +56,7 @@ public class ITSListener implements ITestListener, ITestNGListener{
 		}
 	}
 	
-	private String createDescription(ITestResult testResult, String methodName, String datePath) throws IOException{
+	private String createDescription(ITestResult testResult, String methodName, String datePath) throws IOException{		
 		String error = testResult.getThrowable().getMessage();
 		String filePath = "N/A";
 		if( ! error.equals("")){
@@ -79,17 +79,12 @@ public class ITSListener implements ITestListener, ITestNGListener{
 	 */
 	@Override
 	public void onTestSkipped(ITestResult testResult) {
-		getTimeAndStatus(testResult);
+		
 		
 		try {
 			String methodName = testResult.getName();
-			
-			if(testResult.getParameters().length != 0)
-			{
-				methodName+=":"+testResult.getParameters()[0].toString();
-			}				
-			
-			reportGenerator("N/A", status, methodName, "", getDate("dd_MM_yyyy"));
+			getTimeAndStatus(testResult);			
+			reportGenerator(methodName, status, String.valueOf(time), "", getDate("dd_MM_yyyy"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

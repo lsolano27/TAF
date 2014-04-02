@@ -61,7 +61,7 @@ public class ExcelReport extends XLS{
 		
 		try {
 			if(file.exists()){
-				wb = Workbook.getWorkbook(file.getAbsoluteFile());
+				wb = Workbook.getWorkbook(file);
 				workbook = Workbook.createWorkbook(file, wb); 					
 				sheet = workbook.getSheet(0);	
 				
@@ -123,26 +123,32 @@ public class ExcelReport extends XLS{
 				Cell celdaCurso = null;
 				String valorCeldaCurso=null;	
 				
-				for (int row = 2; row <= sheet.getRows(); row++) {					
+				for (int row = 2; row <= sheet.getRows(); row++) {				
 					celdaCurso= sheet.getCell(0,row);
 					valorCeldaCurso= celdaCurso.getContents();
 					
 					if(columns[0].equals(valorCeldaCurso) || valorCeldaCurso.equals("")){
-						for (int i = 0; i < columns.length; i++) {							
-							if(columns[1].equals("SUCCESS"))
+						for (int i = 0; i < columns.length; i++) {
+							if(columns[1].equals("SUCCESS")){
 								sheet.addCell(new Label(colum + i, row, columns[i], passedFormat()));
-							
-							else if (columns[1].equals("SKIPPED"))
-								sheet.addCell(new Label(colum + i, row, columns[i], skippedFormat()));								
-							else
-								if(i == 4){
-									WritableHyperlink link = new WritableHyperlink(colum + i, row, new File(columns[i]));
-									sheet.addHyperlink(link);
+							}else if (columns[1].equals("SKIP")){
+								if(i < 4 ){
+									sheet.addCell(new Label(colum + i, row, columns[i], skippedFormat()));		
+								}
+							}else{
+								if(i == 4){						
+									File newLink = new File(columns[i]);
+									
+									if(newLink.exists()){
+										WritableHyperlink link = new WritableHyperlink(colum + i, row, newLink);
+										sheet.addHyperlink(link);
+									}										
 								}else{
 									sheet.addCell(new Label(colum + i, row, columns[i], failedFormat()));
 								}								
+							}
 						}
-						break;							
+						break;	
 					}
 				}
 			}else{
