@@ -65,9 +65,9 @@ public class ExcelReport extends XLS{
 				workbook = Workbook.createWorkbook(file, wb); 					
 				sheet = workbook.getSheet(0);	
 				
-				sheet.addCell(new Formula(6, 2, "COUNTIF(B:C,\"Success\")", summayFormat()));
+				sheet.addCell(new Formula(6, 2, "COUNTIF(B:C,\"SUCCESS\")", summayFormat()));
 				sheet.addCell(new Formula(7, 2, "COUNTIF(B:C,\"FAILURE\")", summayFormat()));
-				sheet.addCell(new Formula(8, 2, "COUNTIF(B:C,\"Skipped\")", summayFormat()));
+				sheet.addCell(new Formula(8, 2, "COUNTIF(B:C,\"SKIP\")", summayFormat()));
 				sheet.addCell(new Formula(5, 2, "SUM(G3:I3)", summayFormat()));
 			}else{
 				System.err.println("File does not exist");
