@@ -18,7 +18,6 @@ import jxl.write.Formula;
 import jxl.write.Label;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
-import jxl.write.WritableHyperlink;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
@@ -140,9 +139,9 @@ public class ExcelReport extends XLS{
 									File newLink = new File(columns[i]);
 									
 									if(newLink.exists()){
-										WritableHyperlink link = new WritableHyperlink(colum + i, row, newLink);
-										sheet.addHyperlink(link);
-									}										
+										Formula f = new Formula(colum + i, row, "HYPERLINK(\"" + newLink.getAbsolutePath() +"\","+"\"" + newLink.getName() + "\")", linkFormat());
+										sheet.addCell(f);
+									}																
 								}else{
 									sheet.addCell(new Label(colum + i, row, columns[i], failedFormat()));
 								}								
@@ -193,32 +192,36 @@ public class ExcelReport extends XLS{
 	}
 	
 	private CellFormat projectNameFormat() throws WriteException {
-		return setFormat(Colour.BLUE_GREY, 16, Colour.WHITE, Alignment.JUSTIFY);
+		return setFormat(Colour.BLUE_GREY, 16, Colour.WHITE, Alignment.JUSTIFY, UnderlineStyle.NO_UNDERLINE);
+	}
+	
+	private CellFormat linkFormat() throws WriteException {
+		return setFormat(Colour.WHITE, 10, Colour.BLUE, Alignment.JUSTIFY, UnderlineStyle.SINGLE);
 	}
 
 	private static CellFormat headFormat() throws WriteException {
-		return setFormat(Colour.GREEN, 12, Colour.WHITE, Alignment.CENTRE);
+		return setFormat(Colour.GREEN, 12, Colour.WHITE, Alignment.CENTRE, UnderlineStyle.NO_UNDERLINE);
 	}
 	
 	private static CellFormat passedFormat() throws WriteException {
-		return setFormat(Colour.SKY_BLUE, 10, Colour.BLACK, Alignment.LEFT);
+		return setFormat(Colour.SKY_BLUE, 10, Colour.BLACK, Alignment.LEFT, UnderlineStyle.NO_UNDERLINE);
 	}
 	
 	private static CellFormat failedFormat() throws WriteException {
-		return setFormat(Colour.RED, 11, Colour.WHITE, Alignment.LEFT);
+		return setFormat(Colour.RED, 11, Colour.WHITE, Alignment.LEFT, UnderlineStyle.NO_UNDERLINE);
 	}
 	
 	private static CellFormat skippedFormat() throws WriteException {
-		return setFormat(Colour.YELLOW, 10, Colour.BLACK, Alignment.LEFT);
+		return setFormat(Colour.YELLOW, 10, Colour.BLACK, Alignment.LEFT, UnderlineStyle.NO_UNDERLINE);
 	}
 	
 	private static CellFormat summayFormat() throws WriteException {
-		return setFormat(Colour.YELLOW2, 10, Colour.BLACK, Alignment.CENTRE);
+		return setFormat(Colour.YELLOW2, 10, Colour.BLACK, Alignment.CENTRE, UnderlineStyle.NO_UNDERLINE);
 	}
 
-	private static CellFormat setFormat(Colour bgColor, int fontsize, Colour fontColor, Alignment alignment) throws WriteException {
+	private static CellFormat setFormat(Colour bgColor, int fontsize, Colour fontColor, Alignment alignment, UnderlineStyle underlineStyle) throws WriteException {
 			WritableCellFormat format = new WritableCellFormat();
-			WritableFont fontFormat = new WritableFont(WritableFont.ARIAL, fontsize, WritableFont.BOLD, false, UnderlineStyle.NO_UNDERLINE, fontColor);
+			WritableFont fontFormat = new WritableFont(WritableFont.ARIAL, fontsize, WritableFont.BOLD, false, underlineStyle, fontColor);
 			format.setBackground(bgColor);
 			format.setFont(fontFormat);
 			format.setBorder(Border.ALL, BorderLineStyle.THIN, Colour.BLACK);
