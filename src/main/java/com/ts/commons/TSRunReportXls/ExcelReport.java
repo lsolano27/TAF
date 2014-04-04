@@ -129,8 +129,10 @@ public class ExcelReport extends XLS{
 					if(columns[0].equals(valorCeldaCurso) || valorCeldaCurso.equals("")){
 						for (int i = 0; i < columns.length; i++) {
 							if(columns[1].equals("SUCCESS")){
-								if(i < 4 ){
-									sheet.addCell(new Label(colum + i, row, columns[i], passedFormat()));		
+								if(i == 4 ){
+									sheet.addCell(new Label(colum + i, row, columns[i]));		
+								}else{
+									sheet.addCell(new Label(colum + i, row, columns[i], passedFormat()));	
 								}
 								
 							}else if (columns[1].equals("SKIP")){

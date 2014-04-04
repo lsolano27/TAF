@@ -40,41 +40,54 @@ public class DataSourceXls extends DataSource{
 	}
 		
 	public Object[][] getData(int sheetNum, int rowToBeginRead, int rowToEndRead) throws BiffException, IOException {
-		Sheet sheet = book.getSheet(sheetNum);
-		int rowToEnd;
+		if(existIndex(sheetNum)){
+			Sheet sheet = book.getSheet(sheetNum);
+			int rowToEnd;
 
-		if (rowToEndRead < 1) {
-			rowToEnd = sheet.getRows();
-		} else {
-			rowToEnd = ((sheet.getRows() - (sheet.getRows() - rowToEndRead))) + 1;
-		}
+			if (rowToEndRead < 1) {
+				rowToEnd = sheet.getRows();
+			} else {
+				rowToEnd = ((sheet.getRows() - (sheet.getRows() - rowToEndRead))) + 1;
+			}
 
-		if (rowToEnd < rowToBeginRead) {
-			throw new RuntimeException("Row To start read = " + rowToBeginRead + ", Row to end read = " + rowToEnd 
-										+ ". Row to end read must be higher than Row To start read.");
-		}
+			if (rowToEnd < rowToBeginRead) {
+				throw new RuntimeException("Row To start read = " + rowToBeginRead + ", Row to end read = " + rowToEnd 
+											+ ". Row to end read must be higher than Row To start read.");
+			}
 
-		Object[][] data = new Object[rowToEnd - rowToBeginRead][sheet.getColumns()];
+			Object[][] data = new Object[rowToEnd - rowToBeginRead][sheet.getColumns()];
 
-		for (int row = rowToBeginRead; row < rowToEnd; row++) {
-			for (int colum = 0; colum < sheet.getColumns(); colum++) {
-				Cell cell = sheet.getCell(colum, row);
-				if (isEmptyRow(sheet, row, sheet.getColumns())) {
-					break;
-				} else {
-					data[row - (rowToBeginRead)][colum] = String.valueOf(cell.getContents());
+			for (int row = rowToBeginRead; row < rowToEnd; row++) {
+				for (int colum = 0; colum < sheet.getColumns(); colum++) {
+					Cell cell = sheet.getCell(colum, row);
+					if (isEmptyRow(sheet, row, sheet.getColumns())) {
+						break;
+					} else {
+						data[row - (rowToBeginRead)][colum] = String.valueOf(cell.getContents());
+					}
 				}
 			}
-		}
 
-		closeBook();
+			closeBook();
 
-		if (data.length == 0) {
-			throw new RuntimeException("There is not data to return, the default row to begin run is "
-										+ defaultRowToBeginRun);
-		} else {
-			return data;
+			if (data.length == 0) {
+				throw new RuntimeException("There is not data to return, the default row to begin run is "
+											+ defaultRowToBeginRun);
+			} else {
+				return data;
+			}
+		}else{
+			throw new RuntimeException("Specified sheet index \"" + sheetNum + "\" does not exist in file \"" + getFile().getAbsolutePath() + "\"");
 		}
+		
+	}
+	
+	private boolean existIndex(int sheetNum){
+		if(book.getSheets().length > sheetNum){
+			return true;
+		}else {
+			return false;
+		}		
 	}
 	
 	private int getIndexBySheetName(String sheetNameToGetIndex) throws BiffException, IOException{
