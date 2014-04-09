@@ -14,3 +14,7 @@ TAF FEATURES
 - Design Pattern: Page Object and Page Factory for websites testing and automatic generation of stubs.
 - It can be integrated in any Java editor but we normally work in Eclypse.
 - Can be run in multiple browsers for example: Firefox, Google Chrome, and Internet Explorer.
+
+Additional Information
+===
+Visit our site at http://www.testingsoft.com
