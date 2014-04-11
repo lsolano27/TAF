@@ -5,9 +5,11 @@ import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Listeners;
 
+import com.ts.example.ITSListener.Page.UI;
+
 @Listeners({ITSListener.class})
 public abstract class TestCaseUtil implements Component{
-	
+	private TS_UI uiInstance;
 	private Component component;
 	private int amountOfusingWithOutChecks = 0;
 	
@@ -95,5 +97,13 @@ public abstract class TestCaseUtil implements Component{
 
 	public void setComponent(Component component) {
 		this.component = component;
+	}		
+
+	public UI getUiInstance() {
+		return (UI) uiInstance;
+	}
+
+	public void setUiInstance(UI uiInstance) {
+		this.uiInstance = uiInstance;
 	}	
 }

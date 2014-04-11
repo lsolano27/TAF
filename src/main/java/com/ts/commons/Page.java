@@ -2,15 +2,12 @@ package com.ts.commons;
 
 import org.openqa.selenium.WebElement;
 
-
-
 public abstract class Page implements Component {
-	
-	private TS_UI uiInstance;
+	TS_UI uiInstance;
 	
 	protected Page continueToPage(WebElement btn, Page page){
 		btn.click();
-		page.setUI(uiInstance);
+		page.setUI(uiInstance);		
 		return page;
 	}
 	

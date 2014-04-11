@@ -2,15 +2,26 @@ package org.Listener;
 
 import static com.jayway.restassured.RestAssured.given;
 
+import java.awt.AWTException;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.imageio.ImageIO;
+
+import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGListener;
@@ -19,6 +30,7 @@ import org.testng.ITestResult;
 import org.testng.annotations.Optional;
 
 import com.ts.commons.TSRetry;
+import com.ts.commons.TS_UI;
 import com.ts.commons.TSRunReportXls.ExcelReport;
 
 @SuppressWarnings("unused")
@@ -47,8 +59,9 @@ public class ITSListener implements ITestListener, ITestNGListener{
 		
 		try {
 			String datePath = getDate("dd_MM_yyyy");
-			String description = createDescription(testResult, testResult.getName(), datePath), path = "", methodName = testResult.getName();			
-			reportGenerator(methodName, status, String.valueOf(time), description, datePath);
+			String description = createDescription(testResult, testResult.getName(), datePath), path = "", methodName = testResult.getName();	
+			//takeScreenShot(methodName, datePath);
+			reportGenerator(methodName, status, String.valueOf(time) + " sec - " + String.valueOf(new DecimalFormat("#.##").format(time / 60)) + " min", description, datePath);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -56,9 +69,38 @@ public class ITSListener implements ITestListener, ITestNGListener{
 		}
 	}
 	
+	private void takeScreenShot(String methodName, String datePath) throws IOException{
+		ScreenShotOfSOScreen(methodName, datePath);
+	}
+	
+	private void ScreenShotOfSOScreen(String methodName, String datePath) {
+		try {
+			File directory = new File(".");
+			InetAddress ownIP = InetAddress.getLocalHost();
+			String NewFileNamePath = directory.getCanonicalPath() + "/Report/"+ datePath +"/ScreenShots/";
+			File file = new File(NewFileNamePath);
+			
+			if( ! file.exists()){
+				file.mkdirs();
+			}
+						
+			// Capture the screen shot of the area of the screen defined by the rectangle
+			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			Robot robot = new Robot();
+			BufferedImage bi = robot.createScreenCapture(new Rectangle((int) screenSize.getWidth(), (int) screenSize.getHeight()));
+			ImageIO.write(bi, "png", new File(NewFileNamePath + methodName + ".png"));		
+		} catch (AWTException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}				
+	}
+	
 	private String createDescription(ITestResult testResult, String methodName, String datePath) throws IOException{		
-		String error = testResult.getThrowable().getMessage();
+		String error = "\nERROR: \n" + testResult.getThrowable().getMessage()+ "\n\nFull Stack Trace\n************************************************************************************************************\n";
+		error += getPrintTrack(testResult);
 		String filePath = "N/A";
+		
 		if( ! error.equals("")){
 			File newErrorDir = new File("Report/" + datePath + "/Fails");
 			newErrorDir.mkdirs();
@@ -73,14 +115,20 @@ public class ITSListener implements ITestListener, ITestNGListener{
 		}
 		return filePath;
 	}
+	
+	private String getPrintTrack(ITestResult testResult){
+		String msg = "";
+		for (StackTraceElement iterable_element : testResult.getThrowable().getStackTrace()) {
+			msg += iterable_element.toString() + "\n";
+		}	
+		return msg;
+	}
 
 	/**
 	 * This method call another method to get the duration of the TC and its Status when TC skip
 	 */
 	@Override
-	public void onTestSkipped(ITestResult testResult) {
-		
-		
+	public void onTestSkipped(ITestResult testResult) {		
 		try {
 			String methodName = testResult.getName();
 			getTimeAndStatus(testResult);			
