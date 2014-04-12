@@ -147,7 +147,7 @@ public class ITSListener implements ITestListener, ITestNGListener{
 		
 		try {
 			String methodName = testResult.getName();			
-			reportGenerator(methodName, status, String.valueOf(time), "", getDate("dd_MM_yyyy"));
+			reportGenerator(methodName, status, String.valueOf(time) + " sec - " + String.valueOf(new DecimalFormat("#.##").format(time / 60)) + " min", "", getDate("dd_MM_yyyy"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
