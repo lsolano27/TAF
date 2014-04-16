@@ -9,17 +9,13 @@ import org.apache.commons.net.ftp.FTPClient;
 
 import com.ts.commons.Component;
 
-public class FTP implements Component{
-	String host;
-	String user;
-	String pass;
-	String[] files;
+public abstract class FTP implements Component{
+	private String host;
+	private String user;
+	private String pass;
+	private String[] files;
 	
-	public FTP(String host, String user, String pass){
-		this.host = host;
-		this.user = user;
-		this.pass = pass;
-	}
+	protected abstract FTP connection(String host, String userName, String password);
 	
 	public FTP sendFilesInFolder(String folderPath){
 		File dir = new File(folderPath);
@@ -93,6 +89,38 @@ public class FTP implements Component{
 			e.printStackTrace();
 		}
 		return this;
+	}
+	
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPass() {
+		return pass;
+	}
+
+	public void setPass(String pass) {
+		this.pass = pass;
+	}
+
+	public String[] getFiles() {
+		return files;
+	}
+
+	public void setFiles(String[] files) {
+		this.files = files;
 	}
 	
 	@Override
