@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.SocketException;
+import java.net.URL;
 
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -13,81 +14,82 @@ public abstract class FTP implements Component{
 	private String host;
 	private String user;
 	private String pass;
-	private String[] files;
+	private String destinyFolder;
 	
-	protected abstract FTP connection(String host, String userName, String password);
+	protected FTP connection(String host, String userName, String password, String destinyFolder)
+	{
+		setHost(host);
+		setUser(userName);
+		setPass(password);
+		setDestinyFolder(destinyFolder);
+		return this;
+	}
 	
-	public FTP sendFilesInFolder(String folderPath){
-		File dir = new File(folderPath);
+	public FTP sendFilesInFolder(String folderPath) throws Exception
+	{
+		URL url = FTP.class.getClassLoader().getResource(folderPath.replace("\\", "/"));	
+		File directoryPath = new File(url.getPath());
+		boolean existDirectory = directoryPath.exists();
 		
-		if(dir.exists()){
-			this.files = new String[dir.list().length];
-			
-			for (int i = 0; i < dir.list().length; i++) {
-				this.files[i] = folderPath + "/" + dir.list()[i];
-			}	
-			
-			UploadFiles();
-		}else{
+		if( ! existDirectory)
+		{			
 			throw new RuntimeException("Specified folder \"" + folderPath + "\" does not exist");
-		}		
-		return this;
-	}
-	
-	public FTP sendFiles(String... files){
-		this.files = files;
-		UploadFiles();
-		return this;
-	}
-	
-	private FTP UploadFiles() {
-		FTPClient ftpClient = new FTPClient();
-		FileInputStream inputStream = null;
-		String newFolderName = "TSFTPClient uploaded Files";	
-		
-		try {
-			ftpClient.connect(this.host);
-			boolean login = ftpClient.login(this.user, this.pass);
-
-			if (login) {
-				int numOfUploadedFiles = 0;
-				ftpClient.makeDirectory(newFolderName);
-				System.out.println("Connection established...");			
-				
-				for (String file : files) {
-					File newFile = new File(file);
-					
-					if (newFile.exists()) {
-						inputStream = new FileInputStream(newFile.getAbsolutePath());
-						boolean tempUploaded = ftpClient.storeFile(newFolderName + "/" +newFile.getName(), inputStream);
-						
-						if (tempUploaded) {
-							System.out.println("	" + newFile.getAbsolutePath() + " was uploaded");
-							numOfUploadedFiles ++;
-						}else{
-							System.err.println("	" + newFile.getAbsolutePath() + " was not uploaded");
-						}
-					}					
-				}				
-				
-				if (numOfUploadedFiles == files.length) {
-					System.out.println("	Files uploaded successfully !");
-				} else {
-					System.out.println("	Error in uploading file !");
-				}
-
-				boolean logout = ftpClient.logout();
-				if (logout) {
-					System.out.println(" Connection close...");
-				}
-			} else {
-				System.out.println(" Connection fail...");
-			}
-		} catch (SocketException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+		
+		UploadFiles(directoryPath.listFiles());			
+		return this;
+	}
+	
+	public FTP sendFiles(String... filesPaths) throws Exception{
+
+		File[] files = new File[filesPaths.length];		
+		
+		for (int i = 0; i < filesPaths.length; i++)
+		{
+			URL url = FTP.class.getClassLoader().getResource(filesPaths[i].replace("\\", "/"));
+			files[i] = new File(url.getPath().replace("%5b", "[").replace("%5d", "]").replace("%20", " "));
+		}	
+		
+		UploadFiles(files);		
+		return this;
+	}
+	
+	private FTP UploadFiles(File[] files) throws SocketException, IOException {
+		FTPClient ftpClient = new FTPClient();
+		FileInputStream inputStream = null;	
+		int numOfUploadedFiles = 0;
+		
+		ftpClient.connect(getHost());
+		boolean isLogged = ftpClient.login(getUser(), getPass());
+
+		if ( ! isLogged) {
+			throw new RuntimeException("FTP could not logged on for this user \"" + getUser() + "\"");
+		}		
+			
+		ftpClient.makeDirectory(getDestinyFolder());		
+		
+		for (File newFile : files) 
+		{								
+			newFile.getAbsolutePath();
+			
+			if (newFile.exists()) 
+			{
+				inputStream = new FileInputStream(newFile.getAbsolutePath());
+				boolean isCurrentFileUploaded = ftpClient.storeFile(getDestinyFolder() + "/" +newFile.getName(), inputStream);
+				
+				if (isCurrentFileUploaded) 
+				{
+					numOfUploadedFiles ++;				
+				}
+			}
+		}
+			
+		if(numOfUploadedFiles != files.length)
+		{
+			throw new RuntimeException("Not all files were send. " + numOfUploadedFiles + "\" of " + files.length);
+		}
+
+		ftpClient.logout();		
 		return this;
 	}
 	
@@ -115,14 +117,14 @@ public abstract class FTP implements Component{
 		this.pass = pass;
 	}
 
-	public String[] getFiles() {
-		return files;
+	public String getDestinyFolder() {
+		return destinyFolder;
 	}
 
-	public void setFiles(String[] files) {
-		this.files = files;
+	public void setDestinyFolder(String destinyFolder) {
+		this.destinyFolder = destinyFolder;
 	}
-	
+
 	@Override
 	public FTP and() {
 		return this;
