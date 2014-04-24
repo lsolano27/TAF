@@ -6,17 +6,15 @@ import java.lang.reflect.InvocationTargetException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.pagefactory.DefaultElementLocatorFactory;
 
-import com.ts.commons.RaceConditions.JQUERY;
-import com.ts.commons.RaceConditions.VAADIN;
+import com.ts.commons.RaceConditions.RaceConditions;
 
 public class PageFactory extends org.openqa.selenium.support.PageFactory {
 
 	public static <T> T initElements(WebDriver driver, Class<T> pageClassToProxy) {
         T page = instantiatePage(driver, pageClassToProxy);
         PageFactory.initElements(new DefaultElementLocatorFactory(driver), page);
-        VAADIN.waitForVaadin(driver);
-        JQUERY.waitForJquery(driver);
-        return page;      
+        RaceConditions.waitForAllRaceConditions(driver);
+        return page;
     }
     
     private static <T> T instantiatePage(WebDriver driver, Class<T> pageClassToProxy) {

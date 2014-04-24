@@ -4,21 +4,20 @@ import org.openqa.selenium.WebDriver;
 
 import com.ts.commons.TSJavaScriptExecutor;
 
-public class JQUERY extends RaceConditions{
-	
-	public static void waitForJquery(final WebDriver driver)
-	{
-		setScript("return $.active");	
-		setTypeOfRaceCondition(RaceConditionType.JQUERY);
+public class AJAX extends RaceConditions{
+
+	public static void waitForAjax(final WebDriver driver)
+	{				
+		setScript("return jQuery.active");		
+		setTypeOfRaceCondition(RaceConditionType.AJAX);
 		
-		if(isThisAppUsingJquery(driver))
+		if(isThisAppUsingAjax(driver))
 		{				
 			waitForRaceCondition(driver, "", getScript());			
 		}		
 	}	
 	
-	private static boolean isThisAppUsingJquery(WebDriver driver)
-	{
+	private static boolean isThisAppUsingAjax(WebDriver driver){
 		try 
 		{
 			TSJavaScriptExecutor.executeScript(driver, getScript()).toString();

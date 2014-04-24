@@ -10,23 +10,30 @@ import com.ts.commons.TSJavaScriptExecutor;
 public class VAADIN extends RaceConditions{
 	
 	@SuppressWarnings("unchecked")
-	public static void waitForVaadin(final WebDriver driver){
-		
-		if(isThisAppUsingVaadin(driver)){
+	public static void waitForVaadin(final WebDriver driver)
+	{		
+		if(isThisAppUsingVaadin(driver))
+		{
 			Map<String, String> list = (Map<String, String>) TSJavaScriptExecutor.executeScript(driver, "return vaadin.clients");
 			
-			for (Entry<String, String> client : list.entrySet()) {
+			for (Entry<String, String> client : list.entrySet()) 
+			{
 				setScript("return vaadin.clients[\""+ client.getKey() +"\"].isActive()");
+				setTypeOfRaceCondition(RaceConditionType.VAADIN);
 				waitForRaceCondition(driver, "", getScript());
 			}
 		}		
 	}
 	
-	private static boolean isThisAppUsingVaadin(WebDriver driver){
-		try {
+	private static boolean isThisAppUsingVaadin(WebDriver driver)
+	{
+		try 
+		{
 			TSJavaScriptExecutor.executeScript(driver, "return vaadin.clients").toString();
 			return true;
-		} catch (Exception e) {
+		} 
+		catch (Exception e) 
+		{
 			return false;
 		}
 	}
