@@ -15,6 +15,12 @@ public class TSFireFoxProfile {
 	private String fireBugVersion;	
 	
 	public TSFireFoxProfile(){
+		File mainResourcesDirectory = new File("src/main/resources");
+		
+		if( ! mainResourcesDirectory.exists()){
+			mainResourcesDirectory.mkdirs();
+		}
+		
 		File[] resources = new File("src/main/resources").listFiles();
 		
 		if(hasFirefoxItsOwnProfileForTesting()){
