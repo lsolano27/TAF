@@ -8,6 +8,5 @@ public class JAVASCRIPT extends RaceConditions{
 		setScript("return document.readyState");	
 		setTypeOfRaceCondition(RaceConditionType.JAVASCRIPT);
 		waitForRaceCondition(driver, "", getScript());
-	}	
-	
+	}		
 }

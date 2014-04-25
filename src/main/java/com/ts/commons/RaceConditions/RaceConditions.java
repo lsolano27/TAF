@@ -25,7 +25,7 @@ public class RaceConditions {
 	    	
 		    	switch (getTypeOfRaceCondition()) 
 		    	{
-					case RaceConditionType.VAADIN:
+		    		case RaceConditionType.VAADIN:
 						return Boolean.parseBoolean(returnedValue) == false;
 					case RaceConditionType.JQUERY:
 						return Integer.parseInt(returnedValue) == 0;
@@ -42,7 +42,6 @@ public class RaceConditions {
 		try 
 		{
 			wait.until(expectation);
-			System.out.println(getTypeOfRaceCondition());
 		} 
 		catch (Throwable error) 
 		{

@@ -5,6 +5,8 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 
+import com.ts.commons.DownloadFile.DownloadFile;
+
 public class ChromeDriver extends org.openqa.selenium.chrome.ChromeDriver implements  TsDriver{
 
 	public ChromeDriver()
@@ -40,6 +42,10 @@ public class ChromeDriver extends org.openqa.selenium.chrome.ChromeDriver implem
 	
 	private static void loadExe()
 	{
+		String url = "https://github.com/TestingSoftware/TAF/blob/master/src/main/resources/chromedriver.exe?raw=true";
+		String folder = "src/main/resources";
+		String fileName = "chromedriver.exe";
+		new DownloadFile(url, folder, fileName);	
 		System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
 	}
 	
