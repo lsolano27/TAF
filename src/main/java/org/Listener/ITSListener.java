@@ -21,7 +21,6 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGListener;
@@ -30,11 +29,11 @@ import org.testng.ITestResult;
 import org.testng.annotations.Optional;
 
 import com.ts.commons.TSRetry;
-import com.ts.commons.TS_UI;
 import com.ts.commons.TSRunReportXls.ExcelReport;
 
 @SuppressWarnings("unused")
-public class ITSListener implements ITestListener, ITestNGListener{
+public class ITSListener implements ITestListener, ITestNGListener
+{
 	private String ipServer;
 	private String build;
 	private String testPlan;
@@ -42,11 +41,13 @@ public class ITSListener implements ITestListener, ITestNGListener{
 	private String status;
 	private double time = 0;
 	
-	public String getStatus() {
+	public String getStatus()
+	{
 		return status;
 	}
 
-	public double getTime() {
+	public double getTime() 
+	{
 		return time;
 	}
 
@@ -54,33 +55,42 @@ public class ITSListener implements ITestListener, ITestNGListener{
 	 * This method call another method to get the duration of the TC and its Status when TC Fail
 	 */
 	@Override
-	public void onTestFailure(ITestResult testResult) {
+	public void onTestFailure(ITestResult testResult) 
+	{
 		getTimeAndStatus(testResult);
 		
-		try {
-			String datePath = getDate("dd_MM_yyyy");
+		try 
+		{
+			String datePath = getDate("dd_MM_yyyy");			
 			String description = createDescription(testResult, testResult.getName(), datePath), path = "", methodName = testResult.getName();	
-			//takeScreenShot(methodName, datePath);
-			reportGenerator(methodName, status, String.valueOf(time) + " sec - " + String.valueOf(new DecimalFormat("#.##").format(time / 60)) + " min", description, datePath);
-		} catch (IOException e) {
+			reportGenerator(methodName, status, String.valueOf(time) + " sec - " + String.valueOf(new DecimalFormat("#.##").format(time / 60)) + " min", description, datePath, testResult.getParameters());
+		} 
+		catch (IOException e)
+		{
 			e.printStackTrace();
-		} catch (Exception e) {
+		} 
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 	}
 	
-	private void takeScreenShot(String methodName, String datePath) throws IOException{
+	private void takeScreenShot(String methodName, String datePath) throws IOException
+	{
 		ScreenShotOfSOScreen(methodName, datePath);
 	}
 	
-	private void ScreenShotOfSOScreen(String methodName, String datePath) {
-		try {
+	private void ScreenShotOfSOScreen(String methodName, String datePath) 
+	{
+		try 
+		{
 			File directory = new File(".");
 			InetAddress ownIP = InetAddress.getLocalHost();
 			String NewFileNamePath = directory.getCanonicalPath() + "/Report/"+ datePath +"/ScreenShots/";
 			File file = new File(NewFileNamePath);
 			
-			if( ! file.exists()){
+			if( ! file.exists())
+			{
 				file.mkdirs();
 			}
 						
@@ -89,19 +99,25 @@ public class ITSListener implements ITestListener, ITestNGListener{
 			Robot robot = new Robot();
 			BufferedImage bi = robot.createScreenCapture(new Rectangle((int) screenSize.getWidth(), (int) screenSize.getHeight()));
 			ImageIO.write(bi, "png", new File(NewFileNamePath + methodName + ".png"));		
-		} catch (AWTException e) {
+		} 
+		catch (AWTException e)
+		{
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			e.printStackTrace();
 		}				
 	}
 	
-	private String createDescription(ITestResult testResult, String methodName, String datePath) throws IOException{		
+	private String createDescription(ITestResult testResult, String methodName, String datePath) throws IOException
+	{		
 		String error = "\nERROR: \n" + testResult.getThrowable().getMessage()+ "\n\nFull Stack Trace\n************************************************************************************************************\n";
 		error += getPrintTrack(testResult);
 		String filePath = "N/A";
 		
-		if( ! error.equals("")){
+		if( ! error.equals(""))
+		{
 			File newErrorDir = new File("Report/" + datePath + "/Fails");
 			newErrorDir.mkdirs();
 			File newErrorTxt = new File(newErrorDir.getPath() + "/" + methodName + ".txt");
@@ -113,12 +129,16 @@ public class ITSListener implements ITestListener, ITestNGListener{
 			wr.close();
 			bw.close();
 		}
+		
 		return filePath;
 	}
 	
-	private String getPrintTrack(ITestResult testResult){
+	private String getPrintTrack(ITestResult testResult)
+	{
 		String msg = "";
-		for (StackTraceElement iterable_element : testResult.getThrowable().getStackTrace()) {
+		
+		for (StackTraceElement iterable_element : testResult.getThrowable().getStackTrace()) 
+		{
 			msg += iterable_element.toString() + "\n";
 		}	
 		return msg;
@@ -128,12 +148,16 @@ public class ITSListener implements ITestListener, ITestNGListener{
 	 * This method call another method to get the duration of the TC and its Status when TC skip
 	 */
 	@Override
-	public void onTestSkipped(ITestResult testResult) {		
-		try {
+	public void onTestSkipped(ITestResult testResult) 
+	{		
+		try 
+		{
 			String methodName = testResult.getName();
 			getTimeAndStatus(testResult);			
-			reportGenerator(methodName, status, String.valueOf(time), "", getDate("dd_MM_yyyy"));
-		} catch (Exception e) {
+			reportGenerator(methodName, status, String.valueOf(time), "", getDate("dd_MM_yyyy"), testResult.getParameters());
+		} 
+		catch (Exception e) 
+		{
 			e.printStackTrace();
 		}
 	}
@@ -145,10 +169,13 @@ public class ITSListener implements ITestListener, ITestNGListener{
 	public void onTestSuccess(ITestResult testResult) {
 		getTimeAndStatus(testResult);
 		
-		try {
+		try 
+		{
 			String methodName = testResult.getName();			
-			reportGenerator(methodName, status, String.valueOf(time) + " sec - " + String.valueOf(new DecimalFormat("#.##").format(time / 60)) + " min", "", getDate("dd_MM_yyyy"));
-		} catch (Exception e) {
+			reportGenerator(methodName, status, String.valueOf(time) + " sec - " + String.valueOf(new DecimalFormat("#.##").format(time / 60)) + " min", "", getDate("dd_MM_yyyy"), testResult.getParameters());
+		} 
+		catch (Exception e) 
+		{
 			e.printStackTrace();
 		}
 	}
@@ -157,7 +184,8 @@ public class ITSListener implements ITestListener, ITestNGListener{
 	 * This method call another method to get information of the TC
 	 */
 	@Override
-	public void onTestStart(ITestResult result) {		
+	public void onTestStart(ITestResult result) 
+	{		
 		getTestCaseInfo(result);
 	}	
 
@@ -165,12 +193,15 @@ public class ITSListener implements ITestListener, ITestNGListener{
 	 * This method call another method to get the duration of the TC and its Status when TC fail with percentage of Success
 	 */
 	@Override
-	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+	public void onTestFailedButWithinSuccessPercentage(ITestResult result)
+	{
 		getTimeAndStatus(result);
 	}
 	
-	private void setTSRetry(ITestContext context){
-		for (ITestNGMethod method : context.getAllTestMethods()) {
+	private void setTSRetry(ITestContext context)
+	{
+		for (ITestNGMethod method : context.getAllTestMethods()) 
+		{
 			method.setRetryAnalyzer(new TSRetry());
 		}
 	}
@@ -182,7 +213,8 @@ public class ITSListener implements ITestListener, ITestNGListener{
 	 * This method get the context parameters from the TestNG.xml executed.
 	 */
 	@Override
-	public void onStart(ITestContext context) {		
+	public void onStart(ITestContext context) 
+	{		
 		setTSRetry(context);
 		ipServer = context.getSuite().getParameter("ip");
 		build = context.getSuite().getParameter("build");
@@ -193,7 +225,8 @@ public class ITSListener implements ITestListener, ITestNGListener{
 	 * This method gets the time of the TC, its status, print all gotten information and send it.
 	 * @param result
 	 */
-	private void getTimeAndStatus(ITestResult result) {
+	private void getTimeAndStatus(ITestResult result) 
+	{
 		time =  (result.getEndMillis() - result.getStartMillis()) / 1000;
 		status = getTestStatus(result);
 		//sendToServer();
@@ -203,7 +236,8 @@ public class ITSListener implements ITestListener, ITestNGListener{
 	 * This method return the state of the TC
 	 * @param result = the result of the TC from TestNG execution
 	 */
-	private String getTestStatus(ITestResult result){
+	private String getTestStatus(ITestResult result)
+	{
 		switch (result.getStatus()) {
 		case 2:
 			return "FAILURE";			
@@ -224,10 +258,12 @@ public class ITSListener implements ITestListener, ITestNGListener{
 	 * This method gets the own information of the TC in this case the testID parameter
 	 * @param result = the result of the TC from TestNG execution
 	 */
-	private void getTestCaseInfo(ITestResult result) {
+	private void getTestCaseInfo(ITestResult result)
+	{
 		Object[] parameters = result.getParameters();
 	
-		if(parameters != null && parameters.length > 0){
+		if(parameters != null && parameters.length > 0)
+		{
 			testID = parameters[0].toString();
 		}
 	}
@@ -235,9 +271,12 @@ public class ITSListener implements ITestListener, ITestNGListener{
 	/**
 	 * This method send the gotten information to the "orquestador".
 	 */
-	private void sendToServer(){
-		if(ipServer != "" &&  ipServer != null){
-			if((testID != "" ||  testID != null) && (status != "" ||  status != null) && (build != "" ||  build != null) && (testPlan != "" ||  testPlan != null) && (time > 0)){			
+	private void sendToServer()
+	{
+		if(ipServer != "" &&  ipServer != null)
+		{
+			if((testID != "" ||  testID != null) && (status != "" ||  status != null) && (build != "" ||  build != null) && (testPlan != "" ||  testPlan != null) && (time > 0))
+			{			
 				given().param("tcId", testID)
 					   .param("status", status)
 					   .param("build", build)
@@ -249,21 +288,23 @@ public class ITSListener implements ITestListener, ITestNGListener{
 		}		
 	}
 	
-	private void reportGenerator(String tcName, String tcStatus, String time, @Optional("")String description, String datePath) throws Exception {
+	private void reportGenerator(String tcName, String tcStatus, String time, @Optional("")String description, String datePath, Object[] parameters) throws Exception 
+	{
+		String parametersString = "";
+		
+		for (Object parameter : parameters) 
+		{
+			parametersString += parameter.toString() + "_param_";
+		}
+		
 		new ExcelReport("AllTestCasesStatuses" + datePath + ".xls")
 						.inDirectory("Report/"+datePath)
-						.buildReportHeader("TEST CASE", "STATUS", "DATE", "TIME", "DESCRIPTION", "TOTAL", "SUCCESS", "FAILURE", "SKIP")
-						.addRow(tcName, tcStatus, String.valueOf(new Date()), time, description);
+						.buildReportHeader("TEST CASE", "STATUS", "DATE", "TIME", "DESCRIPTION", "PARAMETERS")
+						.addRow(tcName, tcStatus, String.valueOf(new Date()), time, description, parametersString);
 	}
 	
-	/*private WebDriver getDriver(ITestResult result) {
-		//TODO jalar el driver q esta en uso de forma implicita
-		Object currentClass = result.getInstance();
-		WebDriver driver = ((test2TSListener) currentClass).uiInstance.getDriver();
-        return driver;
-	}	*/
-	
-	private String getDate(String dateFormat) {
+	private String getDate(String dateFormat) 
+	{
 		return new SimpleDateFormat(dateFormat).format(Calendar.getInstance().getTime());
 	}
 }

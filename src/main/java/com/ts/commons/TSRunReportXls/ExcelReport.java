@@ -18,31 +18,39 @@ import jxl.write.Formula;
 import jxl.write.Label;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
+import jxl.write.WritableFont.FontName;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
-public class ExcelReport extends XLS{	
+public class ExcelReport extends XLS
+{	
 	
-	public ExcelReport(String xlsName) throws RowsExceededException, WriteException, IOException{
+	public ExcelReport(String xlsName) throws RowsExceededException, WriteException, IOException
+	{
 		super(xlsName);		
 	}
 	
-	public ExcelReport inDirectory(String reportPath) throws RowsExceededException, WriteException, IOException{
+	public ExcelReport inDirectory(String reportPath) throws RowsExceededException, WriteException, IOException
+	{
 		directoryName = reportPath;
 		File file = new File(directoryName);
 		
-		if( ! file.exists()){
+		if( ! file.exists())
+		{
 			file.mkdirs();
 		}					
+		
 		return this;
 	}	
 	
-	public ExcelReport buildReportHeader(String... colunmNames) throws RowsExceededException, WriteException, IOException{		
+	public ExcelReport buildReportHeader(String... colunmNames) throws RowsExceededException, WriteException, IOException
+	{		
 		ArrayList<String> testCaseHeader = new ArrayList<String>();	
 		
-		for (String columName : colunmNames) {
+		for (String columName : colunmNames) 
+		{
 			testCaseHeader.add(columName);
 		}
 		
@@ -59,25 +67,44 @@ public class ExcelReport extends XLS{
 		WritableSheet sheet = null;
 		
 		try {
-			if(file.exists()){
+			if(file.exists())
+			{
 				wb = Workbook.getWorkbook(file);
-				workbook = Workbook.createWorkbook(file, wb); 					
-				sheet = workbook.getSheet(0);	
+				workbook = Workbook.createWorkbook(file, wb); 			
+				sheet = workbook.getSheet("Results");
 				
-				sheet.addCell(new Formula(6, 2, "COUNTIF(B:C,\"SUCCESS\")", summayFormat()));
-				sheet.addCell(new Formula(7, 2, "COUNTIF(B:C,\"FAILURE\")", summayFormat()));
-				sheet.addCell(new Formula(8, 2, "COUNTIF(B:C,\"SKIP\")", summayFormat()));
-				sheet.addCell(new Formula(5, 2, "SUM(G3:I3)", summayFormat()));
-			}else{
+				if(sheet == null)
+				{
+					sheet =  workbook.createSheet("Results", 1);	
+					sheet.addCell(new Label(0, 0, "TOTAL", headFormat()));
+					sheet.addCell(new Label(1, 0, "SUCCESS", headFormat()));
+					sheet.addCell(new Label(2, 0, "FAILURE", headFormat()));
+					sheet.addCell(new Label(3, 0, "SKIP", headFormat()));
+					sheet.addCell(new Formula(0, 1, "SUM(B2:D2)", summayFormat()));
+					sheet.addCell(new Formula(1, 1, "COUNTIF('Report_TestCases'!B:B,\"SUCCESS\")", summayFormat()));
+					sheet.addCell(new Formula(2, 1, "COUNTIF('Report_TestCases'!B:B,\"FAILURE\")", summayFormat()));
+					sheet.addCell(new Formula(3, 1, "COUNTIF('Report_TestCases'!B:B,\"SKIP\")", summayFormat()));					
+				}			
+			}
+			else
+			{
 				System.err.println("File does not exist");
 			}	
-		} catch (BiffException e) {
+		} 
+		catch (BiffException e)
+		{
 			e.printStackTrace();
-		} catch (RowsExceededException e) {
+		} 
+		catch (RowsExceededException e)
+		{
 			e.printStackTrace();
-		} catch (WriteException e) {
+		} 
+		catch (WriteException e)
+		{
 			e.printStackTrace();
-		} catch (IOException e) {
+		} 
+		catch (IOException e) 
+		{
 			e.printStackTrace();
 		}finally{
 			
@@ -85,12 +112,14 @@ public class ExcelReport extends XLS{
 				sheetAutoFitColumns(sheet);	
 			}
 			
-			if(workbook != null){				
+			if(workbook != null)
+			{				
 				workbook.write();
 				workbook.close();
 			}
 			
-			if(wb != null){
+			if(wb != null)
+			{
 				wb.close();
 			}
 		}			
@@ -100,150 +129,252 @@ public class ExcelReport extends XLS{
 	public ExcelReport createWorkbook() throws IOException, RowsExceededException, WriteException{
 		File file = new File(directoryName + "/" + xlsName);
 		
-		if( ! file.exists()){
+		if( ! file.exists())
+		{
 			file = new File(file.getPath());
 			createXls(Workbook.createWorkbook(file.getAbsoluteFile()), project, columsHeader);
 		}
 		return this;
 	}
 	
-	public void addRow(String... columns) throws IOException, WriteException{		 
+	public void addRow(String... columns) throws IOException, WriteException{		
+		
 		File file = new File(directoryName + "/" + xlsName);
 		WritableWorkbook workbook = null;
 		Workbook wb = null;
 		WritableSheet sheet = null;
 		
 		try {
-			if(file.exists()){
+			if(file.exists())
+			{
 				int colum = 0;
 				wb = Workbook.getWorkbook(file);
 				workbook = Workbook.createWorkbook(file, wb); 					
-				sheet = workbook.getSheet(0);
-				Cell celdaCurso = null;
+				sheet = workbook.getSheet("Report_TestCases");
+				Cell testCaseCell = null;
+				Cell parametersCell = null;
 				String valorCeldaCurso=null;	
 				
-				for (int row = 2; row <= sheet.getRows(); row++) {				
-					celdaCurso= sheet.getCell(0,row);
-					valorCeldaCurso= celdaCurso.getContents();
+				for (int row = 2; row <= sheet.getRows(); row++) 
+				{				
+					testCaseCell= sheet.getCell(0,row);
+					parametersCell = sheet.getCell(5,row);
+					valorCeldaCurso= testCaseCell.getContents();
+					String parametersToReport = "";
 					
-					if(columns[0].equals(valorCeldaCurso) || valorCeldaCurso.equals("")){
-						for (int i = 0; i < columns.length; i++) {
-							if(columns[1].equals("SUCCESS")){
-								if(i == 4 ){
-									sheet.addCell(new Label(colum + i, row, columns[i]));		
-								}else{
-									sheet.addCell(new Label(colum + i, row, columns[i], passedFormat()));	
-								}
-								
-							}else if (columns[1].equals("SKIP")){
-								if(i < 4 ){
-									sheet.addCell(new Label(colum + i, row, columns[i], skippedFormat()));		
-								}
-							}else{
-								if(i == 4){						
-									File newLink = new File(columns[i]);
-									
-									if(newLink.exists()){
-										Formula f = new Formula(colum + i, row, "HYPERLINK(\"" + newLink.getAbsolutePath() +"\","+"\"" + newLink.getName() + "\")", linkFormat());
-										sheet.addCell(f);
-									}																
-								}else{
-									sheet.addCell(new Label(colum + i, row, columns[i], failedFormat()));
-								}								
+					if((columns[0].equals(valorCeldaCurso) && getParameterFormated(columns[5]).equals(parametersCell.getContents())) || valorCeldaCurso.equals(""))
+					{
+						for (int i = 0; i < columns.length; i++) 
+						{
+							if(i == 5 && parametersToReport.equals(""))
+							{
+								parametersToReport = getParameterFormated(columns[i]);
+								columns[i] = parametersToReport;
 							}
+							
+							if(columns[1].equals("SUCCESS"))
+								{
+									if(i == 4 || i == 5)
+									{
+										sheet.addCell(new Label(colum + i, row, columns[i]));		
+									}
+									else
+									{
+										sheet.addCell(new Label(colum + i, row, columns[i], passedFormat()));	
+									}									
+								}
+								else if (columns[1].equals("SKIP"))
+								{
+									if(i < 4)
+									{
+										sheet.addCell(new Label(colum + i, row, columns[i], skippedFormat()));		
+									}
+								}
+								else
+								{
+									if(i == 4)
+									{					
+										File newLink = new File(columns[i]);
+										
+										if(newLink.exists())
+										{
+											Formula f = new Formula(colum + i, row, "HYPERLINK(\"" + newLink.getAbsolutePath() +"\","+"\"" + newLink.getName() + "\")", linkFormat());
+											sheet.addCell(f);
+										}										
+									}
+									else if(i == 5)
+									{
+										sheet.addCell(new Label(colum + i, row, columns[i], smallFontStyle()));
+									}
+									else
+									{
+										sheet.addCell(new Label(colum + i, row, columns[i], failedFormat()));
+									}
+								}													
 						}
-						break;	
+						break;
 					}
 				}
-			}else{
+			}
+			else
+			{
 				System.err.println("File does not exist");
 			}	
-		} catch (BiffException e) {
+		} 
+		catch (BiffException e) 
+		{
 			e.printStackTrace();
-		} catch (RowsExceededException e) {
+		} 
+		catch (RowsExceededException e) 
+		{
 			e.printStackTrace();
-		} catch (WriteException e) {
+		} 
+		catch (WriteException e) 
+		{
 			e.printStackTrace();
-		} catch (IOException e) {
+		} 
+		catch (IOException e) 
+		{
 			e.printStackTrace();
-		}finally{
-			
-			if(sheet != null){
+		}
+		finally
+		{		
+			if(sheet != null)
+			{
 				sheetAutoFitColumns(sheet);	
 			}
 			
-			if(workbook != null){				
+			if(workbook != null)
+			{				
 				workbook.write();
 				workbook.close();
 			}
 			
-			if(wb != null){
+			if(wb != null)
+			{
 				wb.close();
 			}
 		}
 	}	
 	
-	private void createXls(WritableWorkbook workbook, String project, ArrayList<String> columsHeader) throws RowsExceededException, WriteException, IOException{
-		WritableSheet sheet = workbook.createSheet("Report of TestCases",0); 		
-		sheet.addCell(new Label(0, 0, project, projectNameFormat()));
-		sheet.mergeCells(0, 0, columsHeader.size()-1, 0);		
-		
-		for (int i = 0; i < columsHeader.size(); i++) {
-			sheet.addCell(new Label(i, 1, columsHeader.get(i), headFormat()));
+	private String getParameterFormated(String textToFormat)
+	{		
+		if( ! textToFormat.equals(""))
+		{
+			String[] parameters = textToFormat.split("_param_");
+			textToFormat = "(";
+			
+			for (int j = 0; j < parameters.length; j++) 
+			{													
+				if((j + 1) != parameters.length)
+				{
+					textToFormat += parameters[j] + ", ";
+				}
+				else
+				{
+					textToFormat += textToFormat += parameters[j] + ")";
+				}
+			}
 		}
+		else
+		{
+			textToFormat = "No parameters.";
+		}
+		
+		return textToFormat;
+	}
+	
+	private void createXls(WritableWorkbook workbook, String project, ArrayList<String> columsHeader) throws RowsExceededException, WriteException, IOException
+	{
+		WritableSheet sheet = workbook.createSheet("Report_TestCases",0); 		
+		sheet.addCell(new Label(0, 0, project, projectNameFormat()));
+		sheet.mergeCells(0, 0, columsHeader.size()-2, 0);		
+		
+		for (int i = 0; i < columsHeader.size(); i++) 
+		{
+			sheet.addCell(new Label(i, 2, columsHeader.get(i), headFormat()));
+			
+			if((i + 1) == columsHeader.size())
+			{
+				sheet.addCell(new Label(i, 2, columsHeader.get(i), parameterHeadStyle()));
+			}
+		}
+		
 		sheetAutoFitColumns(sheet);
 		workbook.write();
         workbook.close();
 	}
 	
-	private CellFormat projectNameFormat() throws WriteException {
-		return setFormat(Colour.BLUE_GREY, 16, Colour.WHITE, Alignment.JUSTIFY, UnderlineStyle.NO_UNDERLINE);
+	private CellFormat parameterHeadStyle() throws WriteException 
+	{
+		return setFormat(Colour.GREEN, 12, Colour.WHITE, Alignment.JUSTIFY, UnderlineStyle.NO_UNDERLINE, WritableFont.ARIAL);
 	}
 	
-	private CellFormat linkFormat() throws WriteException {
-		return setFormat(Colour.WHITE, 10, Colour.BLUE, Alignment.JUSTIFY, UnderlineStyle.SINGLE);
+	private CellFormat smallFontStyle() throws WriteException 
+	{
+		return setFormat(Colour.WHITE, 8, Colour.BLACK, Alignment.JUSTIFY, UnderlineStyle.NO_UNDERLINE, WritableFont.ARIAL);
+	}
+	
+	private CellFormat projectNameFormat() throws WriteException 
+	{
+		return setFormat(Colour.BLUE_GREY, 16, Colour.WHITE, Alignment.CENTRE, UnderlineStyle.NO_UNDERLINE, WritableFont.ARIAL);
+	}
+	
+	private CellFormat linkFormat() throws WriteException 
+	{
+		return setFormat(Colour.WHITE, 10, Colour.BLUE, Alignment.JUSTIFY, UnderlineStyle.SINGLE, WritableFont.ARIAL);
 	}
 
-	private static CellFormat headFormat() throws WriteException {
-		return setFormat(Colour.GREEN, 12, Colour.WHITE, Alignment.CENTRE, UnderlineStyle.NO_UNDERLINE);
+	private static CellFormat headFormat() throws WriteException 
+	{
+		return setFormat(Colour.GREEN, 12, Colour.WHITE, Alignment.CENTRE, UnderlineStyle.NO_UNDERLINE, WritableFont.ARIAL);
 	}
 	
-	private static CellFormat passedFormat() throws WriteException {
-		return setFormat(Colour.SKY_BLUE, 10, Colour.BLACK, Alignment.LEFT, UnderlineStyle.NO_UNDERLINE);
+	private static CellFormat passedFormat() throws WriteException 
+	{
+		return setFormat(Colour.SKY_BLUE, 10, Colour.BLACK, Alignment.LEFT, UnderlineStyle.NO_UNDERLINE, WritableFont.ARIAL);
 	}
 	
-	private static CellFormat failedFormat() throws WriteException {
-		return setFormat(Colour.RED, 11, Colour.WHITE, Alignment.LEFT, UnderlineStyle.NO_UNDERLINE);
+	private static CellFormat failedFormat() throws WriteException 
+	{		
+		return setFormat(Colour.DARK_RED, 11, Colour.WHITE, Alignment.LEFT, UnderlineStyle.NO_UNDERLINE, WritableFont.ARIAL);
 	}
 	
-	private static CellFormat skippedFormat() throws WriteException {
-		return setFormat(Colour.YELLOW, 10, Colour.BLACK, Alignment.LEFT, UnderlineStyle.NO_UNDERLINE);
+	private static CellFormat skippedFormat() throws WriteException 
+	{
+		return setFormat(Colour.YELLOW, 10, Colour.BLACK, Alignment.LEFT, UnderlineStyle.NO_UNDERLINE, WritableFont.ARIAL);
 	}
 	
-	private static CellFormat summayFormat() throws WriteException {
-		return setFormat(Colour.YELLOW2, 10, Colour.BLACK, Alignment.CENTRE, UnderlineStyle.NO_UNDERLINE);
+	private static CellFormat summayFormat() throws WriteException 
+	{
+		return setFormat(Colour.YELLOW2, 10, Colour.BLACK, Alignment.CENTRE, UnderlineStyle.NO_UNDERLINE, WritableFont.ARIAL);
 	}
 
-	private static CellFormat setFormat(Colour bgColor, int fontsize, Colour fontColor, Alignment alignment, UnderlineStyle underlineStyle) throws WriteException {
-			WritableCellFormat format = new WritableCellFormat();
-			WritableFont fontFormat = new WritableFont(WritableFont.ARIAL, fontsize, WritableFont.BOLD, false, underlineStyle, fontColor);
-			format.setBackground(bgColor);
-			format.setFont(fontFormat);
-			format.setBorder(Border.ALL, BorderLineStyle.THIN, Colour.BLACK);
-			format.setAlignment(alignment);
-			return format;		
+	private static CellFormat setFormat(Colour bgColor, int fontsize, Colour fontColor, Alignment alignment, UnderlineStyle underlineStyle, FontName fontName) throws WriteException 
+	{
+		WritableCellFormat format = new WritableCellFormat();
+		WritableFont fontFormat = new WritableFont(fontName, fontsize, WritableFont.BOLD, false, underlineStyle, fontColor);
+		format.setBackground(bgColor);
+		format.setFont(fontFormat);
+		format.setBorder(Border.ALL, BorderLineStyle.THIN, Colour.BLACK);
+		format.setAlignment(alignment);
+		return format;		
 	}
 	
-	private static void sheetAutoFitColumns(WritableSheet sheet) {
-		for (int i = 0; i < sheet.getColumns(); i++) {
+	private static void sheetAutoFitColumns(WritableSheet sheet) 
+	{
+		for (int i = 0; i < sheet.getColumns(); i++) 
+		{
 			Cell[] cells = sheet.getColumn(i);
 			int longestStrLen = -1;
 
 			if (cells.length == 0)
 				continue;
 
-			for (int j = 0; j < cells.length; j++) {
-				if (cells[j].getContents().length() > longestStrLen) {
+			for (int j = 0; j < cells.length; j++) 
+			{
+				if (cells[j].getContents().length() > longestStrLen) 
+				{
 					String str = cells[j].getContents();
 					if (str == null || str.isEmpty())
 						continue;
