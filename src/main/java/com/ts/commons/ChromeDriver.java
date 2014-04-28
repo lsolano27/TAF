@@ -42,7 +42,7 @@ public class ChromeDriver extends org.openqa.selenium.chrome.ChromeDriver implem
 	
 	private static void loadExe()
 	{
-		String url = "https://github.com/TestingSoftware/TAF/blob/master/src/main/resources/chromedriver.exe?raw=true";
+		String url = "http://tools.testingsoft.com:8888/artifactory/Automation-Files/chromedriver.exe";
 		String folder = "src/main/resources";
 		String fileName = "chromedriver.exe";
 		new DownloadFile(url, folder, fileName);	
