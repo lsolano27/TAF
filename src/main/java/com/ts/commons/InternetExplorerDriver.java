@@ -4,6 +4,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.interactions.Actions;
 
+import com.ts.commons.DownloadFile.DownloadFile;
+
 public class InternetExplorerDriver extends org.openqa.selenium.ie.InternetExplorerDriver implements  TsDriver{
 
 	public InternetExplorerDriver()
@@ -30,6 +32,10 @@ public class InternetExplorerDriver extends org.openqa.selenium.ie.InternetExplo
 
 	private static void loadExe()
 	{
+		String url = "http://tools.testingsoft.com:8888/artifactory/Automation-Files/IEDriverServer.exe";
+		String folder = "src/main/resources";
+		String fileName = "IEDriverServer.exe";
+		new DownloadFile(url, folder, fileName);	
 		System.setProperty("webdriver.ie.driver", "src/main/resources/IEDriverServer.exe");
 	}
 	
