@@ -10,6 +10,8 @@ class XLS
 	protected String directoryName;
 	String project;
 	
+	public XLS(){}
+			
 	public XLS(String xlsName)
 	{
 		this.setXlsName(xlsName);

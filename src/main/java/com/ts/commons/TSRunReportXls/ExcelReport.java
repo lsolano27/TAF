@@ -26,6 +26,7 @@ import jxl.write.biff.RowsExceededException;
 
 public class ExcelReport extends XLS
 {	
+	public ExcelReport(){}
 	
 	public ExcelReport(String xlsName) throws RowsExceededException, WriteException, IOException
 	{
@@ -45,7 +46,7 @@ public class ExcelReport extends XLS
 		return this;
 	}	
 	
-	public ExcelReport buildReportHeader(String... colunmNames) throws RowsExceededException, WriteException, IOException
+	public ExcelReport buildReportHeader(String... colunmNames) throws Exception
 	{		
 		ArrayList<String> testCaseHeader = new ArrayList<String>();	
 		
@@ -56,8 +57,12 @@ public class ExcelReport extends XLS
 		
 		setColumsHeader(testCaseHeader);
 		createWorkbook();	
-		buildReportCounts();		
+		buildReportCounts();	
 		return this;
+	}
+	
+	private void createGraph() throws Exception{
+		new Graph(new File(directoryName + "/" + xlsName).getAbsoluteFile());
 	}
 	
 	public ExcelReport buildReportCounts() throws RowsExceededException, WriteException, IOException{		
@@ -71,7 +76,7 @@ public class ExcelReport extends XLS
 			{
 				wb = Workbook.getWorkbook(file);
 				workbook = Workbook.createWorkbook(file, wb); 			
-				sheet = workbook.getSheet("Results");
+				sheet = workbook.getSheet("Results");			
 				
 				if(sheet == null)
 				{
@@ -80,10 +85,10 @@ public class ExcelReport extends XLS
 					sheet.addCell(new Label(1, 0, "SUCCESS", headFormat()));
 					sheet.addCell(new Label(2, 0, "FAILURE", headFormat()));
 					sheet.addCell(new Label(3, 0, "SKIP", headFormat()));
-					sheet.addCell(new Formula(0, 1, "SUM(B2:D2)", summayFormat()));
-					sheet.addCell(new Formula(1, 1, "COUNTIF('Report_TestCases'!B:B,\"SUCCESS\")", summayFormat()));
-					sheet.addCell(new Formula(2, 1, "COUNTIF('Report_TestCases'!B:B,\"FAILURE\")", summayFormat()));
-					sheet.addCell(new Formula(3, 1, "COUNTIF('Report_TestCases'!B:B,\"SKIP\")", summayFormat()));					
+					sheet.addCell(new Label(0, 1, "", summayFormat()));
+					sheet.addCell(new Label(1, 1, "", summayFormat()));
+					sheet.addCell(new Label(2, 1, "", summayFormat()));
+					sheet.addCell(new Label(3, 1, "", summayFormat()));				
 				}			
 			}
 			else
@@ -126,7 +131,7 @@ public class ExcelReport extends XLS
 		return this;
 	}
 	
-	public ExcelReport createWorkbook() throws IOException, RowsExceededException, WriteException{
+	public ExcelReport createWorkbook() throws Exception{
 		File file = new File(directoryName + "/" + xlsName);
 		
 		if( ! file.exists())
@@ -137,7 +142,7 @@ public class ExcelReport extends XLS
 		return this;
 	}
 	
-	public void addRow(String... columns) throws IOException, WriteException{		
+	public void addRow(String... columns) throws Exception{		
 		
 		File file = new File(directoryName + "/" + xlsName);
 		WritableWorkbook workbook = null;
@@ -255,6 +260,8 @@ public class ExcelReport extends XLS
 				wb.close();
 			}
 		}
+		
+		createGraph();
 	}	
 	
 	private String getParameterFormated(String textToFormat)
