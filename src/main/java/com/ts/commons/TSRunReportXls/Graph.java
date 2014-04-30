@@ -20,7 +20,9 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
+import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.util.Rotation;
 
 public class Graph {
 	final int width = 640; 
@@ -51,9 +53,9 @@ public class Graph {
 	private DefaultPieDataset fillDataSet(HSSFSheet sheet)
 	{
 		DefaultPieDataset my_pie_chart_data = new DefaultPieDataset();
-		my_pie_chart_data.setValue(sheet.getRow(0).getCell(1).getStringCellValue(), sheet.getRow(1).getCell(1).getNumericCellValue());
-		my_pie_chart_data.setValue(sheet.getRow(0).getCell(2).getStringCellValue(), sheet.getRow(1).getCell(2).getNumericCellValue());
-		my_pie_chart_data.setValue(sheet.getRow(0).getCell(3).getStringCellValue(), sheet.getRow(1).getCell(3).getNumericCellValue());
+		my_pie_chart_data.setValue(sheet.getRow(0).getCell(1).getStringCellValue() + " - " + (int)sheet.getRow(1).getCell(1).getNumericCellValue(), sheet.getRow(1).getCell(1).getNumericCellValue());
+		my_pie_chart_data.setValue(sheet.getRow(0).getCell(2).getStringCellValue() + " - " + (int)sheet.getRow(1).getCell(2).getNumericCellValue(), sheet.getRow(1).getCell(2).getNumericCellValue());
+		my_pie_chart_data.setValue(sheet.getRow(0).getCell(3).getStringCellValue() + " - " + (int)sheet.getRow(1).getCell(3).getNumericCellValue(), sheet.getRow(1).getCell(3).getNumericCellValue());
 		return my_pie_chart_data;
 	}
 	
@@ -82,9 +84,15 @@ public class Graph {
 	 
 	private JFreeChart drawChart(DefaultPieDataset my_pie_chart_data) throws Exception 
 	{		
-		JFreeChart myPieChart = ChartFactory.createPieChart("Excel Test Cases Result Graph", my_pie_chart_data, true, true, false);	
-		PiePlot plot = (PiePlot) myPieChart.getPlot(); 
-		Color[] colors = {new Color(102, 102, 255), new Color(204, 0, 0), Color.yellow};
+		JFreeChart myPieChart = ChartFactory.createPieChart3D("Excel Test Cases Result Graph", my_pie_chart_data, true, true, false);	
+		PiePlot3D plot = (PiePlot3D ) myPieChart.getPlot(); 
+		plot.setStartAngle(270);
+		plot.setDirection(Rotation.ANTICLOCKWISE);
+	    plot.setForegroundAlpha(0.60f);
+	    Color blue = new Color(112, 127, 186);
+		Color red =  new Color(240, 32, 32);
+		Color yellow =  new Color(239, 246, 31);
+		Color[] colors = {blue, red, yellow};
 		PieRenderer renderer = new PieRenderer(colors);
         renderer.setColor(plot, my_pie_chart_data);		
 		ByteArrayOutputStream chart_out = new ByteArrayOutputStream();

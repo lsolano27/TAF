@@ -194,6 +194,10 @@ public class ExcelReport extends XLS
 									{
 										sheet.addCell(new Label(colum + i, row, columns[i], skippedFormat()));		
 									}
+									else if(i == 5)
+									{
+										sheet.addCell(new Label(colum + i, row, columns[i]));	
+									}
 								}
 								else
 								{
