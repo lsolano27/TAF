@@ -28,6 +28,7 @@ public class Graph {
 	final int width = 640; 
 	final int height = 480; 
 	final float quality = 1;
+	final String sheetNameTemp = "Results_Temp";
 	final String sheetName = "Results";
 	private static final int POSITION_X = 1;	 
 	private static final int POSITION_Y = 5;	 
@@ -38,16 +39,12 @@ public class Graph {
 	{
 		FileInputStream fis = new FileInputStream(excel.getAbsolutePath());	
 		HSSFWorkbook my_workbook = new HSSFWorkbook(fis);
-		fis.close();		
-		HSSFSheet sheet = my_workbook.getSheet(sheetName);	
-		
-		deleteGraphIfExist(sheet);
-		setFormulas(my_workbook, sheet);		
+		HSSFSheet sheet = my_workbook.getSheet(sheetNameTemp);
+		fis.close();
+		setFormulas(my_workbook, sheet);
 		DefaultPieDataset my_pie_chart_data = fillDataSet(sheet);		
-		closeXls(excel, my_workbook);
-		
 		JFreeChart chart = drawChart(my_pie_chart_data);
-		addChartToExcel(excel, chart);
+		addChartToExcel(my_workbook, excel, chart);
 	}
 	
 	private DefaultPieDataset fillDataSet(HSSFSheet sheet)
@@ -70,18 +67,8 @@ public class Graph {
         evaluator.evaluateInCell(sheet.getRow(1).getCell(2));
         evaluator.evaluateInCell(sheet.getRow(1).getCell(3));
         evaluator.evaluateInCell(sheet.getRow(1).getCell(4));
-	}
+	}	
 	
-	private void deleteGraphIfExist(HSSFSheet sheet)
-	{
-		HSSFPatriarch patriarch = sheet.getDrawingPatriarch();		
-
-		if(patriarch != null)
-		{
-			sheet.getDrawingPatriarch().getChildren().clear();
-		}	
-	}
-	 
 	private JFreeChart drawChart(DefaultPieDataset my_pie_chart_data) throws Exception 
 	{		
 		JFreeChart myPieChart = ChartFactory.createPieChart3D("Excel Test Cases Result Graph", my_pie_chart_data, true, true, false);	
@@ -100,20 +87,24 @@ public class Graph {
 		return myPieChart;
 	}
 	
-	public void addChartToExcel(File excel, JFreeChart chart) throws Exception
+	public void addChartToExcel(HSSFWorkbook wb, File excel, JFreeChart chart) throws Exception
 	{        
 		final BufferedImage buffer = chart.createBufferedImage(width, height);
-		FileInputStream in = new FileInputStream(excel.getPath());
-		HSSFWorkbook wb = new HSSFWorkbook(in, true);
-		in.close();
+		HSSFSheet sheet = wb.getSheet(sheetNameTemp);
+		HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0, (short) POSITION_X, POSITION_Y, (short) CHART_WIDTH, CHART_HIGH);
+		HSSFPatriarch patriarch = sheet.createDrawingPatriarch();	
 		ByteArrayOutputStream img_bytes = new ByteArrayOutputStream();
 		ImageIO.write(buffer, "png", img_bytes);
-		img_bytes.flush();
-		HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0, (short) POSITION_X, POSITION_Y, (short) CHART_WIDTH, CHART_HIGH);
-		int index = wb.addPicture(img_bytes.toByteArray(), Workbook.PICTURE_TYPE_PNG);
-		HSSFSheet sheet = wb.getSheet(sheetName);
-		HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
-		patriarch.createPicture(anchor, index);
+		img_bytes.flush();		
+		int index = wb.addPicture(img_bytes.toByteArray(), Workbook.PICTURE_TYPE_PNG);				
+		patriarch.createPicture(anchor, index);		
+		
+		if(wb.getSheet(sheetName) != null)
+		{
+			wb.removeSheetAt(wb.getSheetIndex(sheetName));
+		}
+		
+		wb.setSheetName(wb.getSheetIndex(sheet), sheetName); 
 		closeXls(excel, wb);
     }	
 	
@@ -145,5 +136,5 @@ public class Graph {
                 plot.setSectionPaint(keys.get(i), this.color[aInt]); 
             } 
         } 
-    } 
+    }
 }

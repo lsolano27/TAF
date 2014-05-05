@@ -3,10 +3,12 @@ package com.ts.commons.TSRunReportXls;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import jxl.Cell;
 import jxl.CellView;
 import jxl.Workbook;
+import jxl.WorkbookSettings;
 import jxl.format.Alignment;
 import jxl.format.Border;
 import jxl.format.BorderLineStyle;
@@ -65,7 +67,7 @@ public class ExcelReport extends XLS
 		new Graph(new File(directoryName + "/" + xlsName).getAbsoluteFile());
 	}
 	
-	public ExcelReport buildReportCounts() throws RowsExceededException, WriteException, IOException{		
+	public ExcelReport buildReportCounts() throws Exception{		
 		File file = new File(directoryName + "/" + xlsName);
 		WritableWorkbook workbook = null;
 		Workbook wb = null;
@@ -75,21 +77,18 @@ public class ExcelReport extends XLS
 			if(file.exists())
 			{
 				wb = Workbook.getWorkbook(file);
-				workbook = Workbook.createWorkbook(file, wb); 			
-				sheet = workbook.getSheet("Results");			
-				
-				if(sheet == null)
-				{
-					sheet =  workbook.createSheet("Results", 1);	
-					sheet.addCell(new Label(0, 0, "TOTAL", headFormat()));
-					sheet.addCell(new Label(1, 0, "SUCCESS", headFormat()));
-					sheet.addCell(new Label(2, 0, "FAILURE", headFormat()));
-					sheet.addCell(new Label(3, 0, "SKIP", headFormat()));
-					sheet.addCell(new Label(0, 1, "", summayFormat()));
-					sheet.addCell(new Label(1, 1, "", summayFormat()));
-					sheet.addCell(new Label(2, 1, "", summayFormat()));
-					sheet.addCell(new Label(3, 1, "", summayFormat()));				
-				}			
+				workbook = Workbook.createWorkbook(file, wb);	
+				cleanBook(workbook);
+				sheet =  workbook.createSheet("Results_Temp", 1);	
+				sheet.addCell(new Label(0, 0, "TOTAL", headFormat()));
+				sheet.addCell(new Label(1, 0, "SUCCESS", headFormat()));
+				sheet.addCell(new Label(2, 0, "FAILURE", headFormat()));
+				sheet.addCell(new Label(3, 0, "SKIP", headFormat()));
+				sheet.addCell(new Label(0, 1, "", summayFormat()));
+				sheet.addCell(new Label(1, 1, "", summayFormat()));
+				sheet.addCell(new Label(2, 1, "", summayFormat()));
+				sheet.addCell(new Label(3, 1, "", summayFormat()));				
+			
 			}
 			else
 			{
@@ -131,19 +130,36 @@ public class ExcelReport extends XLS
 		return this;
 	}
 	
+	private void cleanBook(WritableWorkbook workbook)
+	{
+		WritableSheet[] sheets = workbook.getSheets();		
+		if(sheets.length > 1)
+		{
+			for (int i = 1; i < sheets.length; i++) 
+			{
+				workbook.removeSheet(i);
+			}
+		}
+	}
+	
 	public ExcelReport createWorkbook() throws Exception{
-		File file = new File(directoryName + "/" + xlsName);
+		File file = new File(directoryName + "/" + xlsName);		 
 		
 		if( ! file.exists())
 		{
 			file = new File(file.getPath());
-			createXls(Workbook.createWorkbook(file.getAbsoluteFile()), project, columsHeader);
+			WorkbookSettings ws = new WorkbookSettings();
+			ws.setLocale(new Locale("en", "EN"));
+			ws.setDrawingsDisabled(false);
+			
+			WritableWorkbook wb = Workbook.createWorkbook(file.getAbsoluteFile(), ws);
+			createXls(wb, project, columsHeader);
 		}
 		return this;
 	}
 	
-	public void addRow(String... columns) throws Exception{		
-		
+	public void addRow(String... columns) throws Exception
+	{		
 		File file = new File(directoryName + "/" + xlsName);
 		WritableWorkbook workbook = null;
 		Workbook wb = null;
