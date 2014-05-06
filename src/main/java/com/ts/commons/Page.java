@@ -5,7 +5,7 @@ import org.openqa.selenium.WebElement;
 public abstract class Page implements Component {
 	TS_UI uiInstance;
 	
-	protected Page continueToPage(WebElement btn, Page page){
+	public Page continueToPage(WebElement btn, Page page){
 		btn.click();
 		page.setUI(uiInstance);		
 		return page;
