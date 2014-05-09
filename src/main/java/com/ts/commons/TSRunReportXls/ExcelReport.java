@@ -299,7 +299,7 @@ public class ExcelReport extends XLS
 				}
 				else
 				{
-					textToFormat += textToFormat += parameters[j] + ")";
+					textToFormat += parameters[j] + ")";
 				}
 			}
 		}
