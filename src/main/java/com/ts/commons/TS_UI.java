@@ -6,6 +6,8 @@ import org.openqa.selenium.remote.BrowserType;
 public class TS_UI {
 	private WebDriver driver;
 	
+	public TS_UI() {}
+			
 	public TS_UI(String browserType) {
 		switch (browserType) {
 		case BrowserType.CHROME:	
